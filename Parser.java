@@ -1,31 +1,24 @@
 package SearchEngine;
 
-import com.sun.xml.internal.ws.util.StringUtils;
-import jdk.nashorn.internal.runtime.regexp.joni.Regex;
-
-import javax.print.attribute.standard.DocumentName;
-import java.io.StringBufferInputStream;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.TreeMap;
 
 
 public class Parser
 {
     private static HashMap<String,String> m_StopWords;
     public Map<String,Term> m_terms;//******
-    private Map<String,String> m_stem;// beforeStem,afterStem
+    private static Map<String,String> m_stem=new HashMap<>();// beforeStem,afterStem
     //private ArrayList<String> beforeTerms;
     private Map<String,Document>m_documents;
-   /** private final Regex r=new Regex(",$#!&=?*<^>(){}\":;+|\\[\\]");
-    private final HashMap<Character,Character> symbols=new HashMap<Character,Character>(){
-        {put('&','x');put('#','x');put('$','x');put('!','x');put('?','x');put('*','x');put(':','x');put(';','x')
-        ;put('\"','x');put('+','x');put('=','x');put('|','x');put('(','x');put(')','x');
-        put('[','x');put(']','x');put('{','x');put('}','x');put('<','x');put('>','x');put('^','x');put('.','x');put('\'','x')
-        ;}
-    };
-    */
+    /** private final Regex r=new Regex(",$#!&=?*<^>(){}\":;+|\\[\\]");
+     private final HashMap<Character,Character> symbols=new HashMap<Character,Character>(){
+     {put('&','x');put('#','x');put('$','x');put('!','x');put('?','x');put('*','x');put(':','x');put(';','x')
+     ;put('\"','x');put('+','x');put('=','x');put('|','x');put('(','x');put(')','x');
+     put('[','x');put(']','x');put('{','x');put('}','x');put('<','x');put('>','x');put('^','x');put('.','x');put('\'','x')
+     ;}
+     };
+     */
 
     private boolean doStem=true;
     private Stemmer stemmer;
@@ -45,29 +38,28 @@ public class Parser
             this.m_StopWords = new HashMap<>(m_StopWords);//added new need tot check time to run
         this.m_terms = new HashMap<>();
         m_documents=new HashMap<>(documents);
-        m_stem= new HashMap<>();
         doStem=true;
     }
     public void ParseAll()
     {
         //int i=0;
         /**for (Map.Entry<String,Document> entry : m_documents.entrySet()) {
-          //  if(i<1){
-                Document value = entry.getValue();
-                currDoc = entry.getKey();
-                //System.out.println(currDoc+"curr doc in ParseAll");
-                parseDoc(value);
-            //    i++;
-                // do stuff
-          //  }
-          //  else
-            //    break;
+         //  if(i<1){
+         Document value = entry.getValue();
+         currDoc = entry.getKey();
+         //System.out.println(currDoc+"curr doc in ParseAll");
+         parseDoc(value);
+         //    i++;
+         // do stuff
+         //  }
+         //  else
+         //    break;
          */
-            for (Document duc: m_documents.values())
-            {
-                currDoc=duc.getId();
-                parseDoc(duc);
-            }
+        for (Document duc: m_documents.values())
+        {
+            currDoc=duc.getId();
+            parseDoc(duc);
+        }
         //}
     }
 
@@ -81,7 +73,7 @@ public class Parser
         for(int i=0;i<termsDoc.length;i++)
         {
             //if(termsDoc[i].length()<1||(termsDoc[i].toUpperCase()).matches("^(?=.*[A-Z])(?=.*[0-9])[A-Z0-9]+$"))
-             //   continue;
+            //   continue;
             count=0;
             //String SSS=termsDoc[i].replaceAll("-","");
             if((termsDoc[i].length()==0)|| ((termsDoc[i].trim().length()) == 0))
@@ -89,18 +81,24 @@ public class Parser
                 continue;
             termsDoc[i]= removeExtra(termsDoc[i]);
             if (termsDoc[i].length()>0)
-                    //&&)
+            //&&)
             {
                 if (!m_StopWords.containsKey(termsDoc[i]))
                 {//maybe remove *******??????
-                   /** if(termsDoc[i].indexOf('-')!=-1&&termsDoc[i].length()>1)
+                    /** if(termsDoc[i].indexOf('-')!=-1&&termsDoc[i].length()>1)
+                     {
+                     termsDoc[i]=handleMakaf(termsDoc[i]);
+                     addToTerm(termsDoc[i]);
+                     continue;
+                     }
+                     */
+                    if(termsDoc[i].charAt(0)=='$')
                     {
-                        termsDoc[i]=handleMakaf(termsDoc[i]);
-                        addToTerm(termsDoc[i]);
+                        addToTerm(termsDoc[i].substring(0,termsDoc[i].length()-1)+" dollar");
                         continue;
                     }
-*/
-                     if(isNumber(termsDoc[i]))
+
+                    if(isNumber(termsDoc[i]))
                     {
                         termsDoc[i] = numbersHandler(termsDoc[i]);// numb 25-27,21/05/1991,29-word done
                         if(termsDoc[i].length()>0)
@@ -150,7 +148,7 @@ public class Parser
                                         }
                                     }
                                     //if(mydate.charAt(0)==' ')
-                                        //mydate=mydate.substring(1);
+                                    //mydate=mydate.substring(1);
                                     addToTerm(mydate);// to update i ....
                                     continue;
                                 }
@@ -163,8 +161,8 @@ public class Parser
 
                     else if(termsDoc[i].length()>0){
                         //if((curTerm.toUpperCase()).matches("^(?=.*[A-Z])(?=.*[0-9])[A-Z0-9]+$"))
-                          //  continue;
-                         termsDoc[i]=termsDoc[i].replaceAll("[%\\.// \\\\\\s]","");
+                        //  continue;
+                        termsDoc[i]=termsDoc[i].replaceAll("[$%\\.// \\\\\\s]","");
                         if (termsDoc[i].length()>0&&Character.isUpperCase(termsDoc[i].charAt(0)))
                         {//check if the term capital letter up to phrase of 4 words.
                             String str1 = "", str2 = "", total = "";
@@ -181,17 +179,17 @@ public class Parser
                         else
                         {
                             if(termsDoc[i].length()>0) {
-                               // termsDoc[i] = termsDoc[i].replaceAll("[\\s % \\.////]", "");
-                               // termsDoc[i]=termsDoc[i].replaceAll(".")
-                            if ((!m_StopWords.containsKey(termsDoc[i].toLowerCase())) && termsDoc[i].contains("\'"))
-                                termsDoc[i] = handleApostrophe(termsDoc[i]);
-                            addToTerm(termsDoc[i]);
-                            continue;
-                        }
+                                // termsDoc[i] = termsDoc[i].replaceAll("[\\s % \\.////]", "");
+                                // termsDoc[i]=termsDoc[i].replaceAll(".")
+                                if ((!m_StopWords.containsKey(termsDoc[i].toLowerCase())) && termsDoc[i].contains("\'"))
+                                    termsDoc[i] = handleApostrophe(termsDoc[i]);
+                                addToTerm(termsDoc[i]);
+                                continue;
+                            }
                         }
                     }
-            }
-        }}}
+                }
+            }}}
     private void addToTerm(String str)
     {
         String strafter;
@@ -215,8 +213,8 @@ public class Parser
                         str=strafter;
                     }
                 }
-               // if(str.equals("illumin"))
-                 //   System.out.print("ilumin add to term");
+                // if(str.equals("illumin"))
+                //   System.out.print("ilumin add to term");
                 if (m_terms.containsKey(str)) {
                     //think what have to update
                     m_terms.get(str).setTotalApperance(1);//add 1 to total number of appernces in the entire magar
@@ -491,7 +489,7 @@ public class Parser
     }
     public String removeExtra(String str)
     {
-        str=str.replaceAll("[,$#!&?*()<>^{}\\\":;+|\\[\\]\\s\\\\]","");
+        str=str.replaceAll("[,#!&?*()<>^{}\\\":;+|\\[\\]\\s\\\\]","");
         //str=str.replaceAll([symbols.keySet().contains()],"");
         StringBuilder sdot= new StringBuilder();
         if (str.length()>0) {
@@ -503,18 +501,18 @@ public class Parser
                 if (last=='\''||last=='.')
                     str = str.substring(0, str.length() - 1);
             }
-                if (str.indexOf('.') != str.lastIndexOf('.')) {
-                    int dot = str.indexOf('.');
-                    sdot.append(str.substring(0, dot + 1));
-                    str = str.substring(dot + 1, str.length());
-                    str = str.replaceAll("\\.", "");
-                    sdot.append(str);
-                    str = sdot.toString();
-                }
+            if (str.indexOf('.') != str.lastIndexOf('.')) {
+                int dot = str.indexOf('.');
+                sdot.append(str.substring(0, dot + 1));
+                str = str.substring(dot + 1, str.length());
+                str = str.replaceAll("\\.", "");
+                sdot.append(str);
+                str = sdot.toString();
+            }
             //while(str.indexOf("-")==0)
-              //  str=str.substring(1);
+            //  str=str.substring(1);
             //while(str.length()>0&&str.lastIndexOf('-')==str.length()-1)
-              // str = str.substring(0, str.length()-1);
+            // str = str.substring(0, str.length()-1);
         }
         return str;
     }

@@ -2,30 +2,31 @@ package SearchEngine;
 import java.io.*;
 import java.util.*;
 import java.lang.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Indexer
 {
     private Map<String,Term>mp_terms;
     public static Map<String,TermDic> m_Dictionary=new HashMap<>();
     //private final List sortedTerms;
-    public Map<String,TermCache>m_Cache;
+    public static Map<String,TermCache>m_Cache= new HashMap<>();
     private int mytxt;
     private String mypath;
     private String newLine;
 
 
     public Indexer(Map<String,Term> parsedWords,int i,String mypath) throws IOException {//change the i to path ....
-        this.mypath="C:\\Users\\yaels\\Desktop\\11\\";
+        this.mypath="C:\\Users\\ibrahim\\Desktop\\11\\";
         mp_terms=new TreeMap<>(parsedWords);
         mytxt = i;
-        m_Cache=new HashMap<>();
         newLine = System.getProperty("line.separator");
         www();
     }
     public void www() throws IOException
     {
         //NEED TO CHANGE BACK TO GET MYPART !!!!!!!!!!!!!!!!!!!!!!!
-         //File logFile=new File("C:\\Users\\yaels\\Desktop\\11\\ibr.txt");
+        //File logFile=new File("C:\\Users\\yaels\\Desktop\\11\\ibr.txt");
         File logFile=new File(mypath+mytxt+".txt");
         BufferedWriter writer = new BufferedWriter(new FileWriter(logFile));
         //System.out.println(logFile.getCanonicalPath());
@@ -42,17 +43,11 @@ public class Indexer
             }
             else
                 m_Dictionary.put(termo, new TermDic(termo,mp_terms.get(termo).getTotalApperance(),
-                       0, mp_terms.get(termo).getNumOfDocIDF()));
+                        0, mp_terms.get(termo).getNumOfDocIDF()));
             String value = mp_terms.get(termo).toString();//get the string that describe the term
             WriteToTxt(value,writer);
         }
-        List <TermDic>sortedTerms=new ArrayList(m_Dictionary.values());
-        Collections.sort(sortedTerms);
-        for(int m=0;m<10000;m++)
-        {
-            m_Cache.put(sortedTerms.get(sortedTerms.size()-1-m).getName(),
-                    new TermCache(sortedTerms.get(sortedTerms.size()-1-m).getName(),"",0));
-        }
+
         writer.close();
     }
     public void WriteToTxt(String s, BufferedWriter writer){
@@ -138,6 +133,14 @@ public class Indexer
     public String mergTwoFileLast(String path1,String path2,String path3) throws IOException{
         //the merge for the last tow temporary posting files
         //create the dictionary and cache
+        List <TermDic>sortedTerms=new ArrayList(m_Dictionary.values());
+        Collections.sort(sortedTerms);
+        for(int m=0;m<10000;m++)
+        {
+            m_Cache.put(sortedTerms.get(sortedTerms.size()-1-m).getName(),
+                    new TermCache(sortedTerms.get(sortedTerms.size()-1-m).getName(),
+                            "",0));
+        }
         int counterLine=0;
         File finalFile=new File(path3+".txt");
         BufferedWriter writer = new BufferedWriter(new FileWriter(finalFile));
@@ -199,18 +202,26 @@ public class Indexer
                 String docs = line.substring(line.indexOf("&"), line.length()) + line2.substring(line2.indexOf("&") + 1, line2.length());
                 String NUM1=line.substring(line.indexOf("#") + 1, line.indexOf("&") - 1);
                 NUM1=NUM1.replaceAll(" ","");
-
+                //
+                String NUM11=line.substring(line.indexOf("[") + 1, line.indexOf("]") );
+                NUM11=NUM11.replaceAll(" ","");
+                //
                 String NUM2=line2.substring(line2.indexOf("#") + 1, line2.indexOf("&") - 1);
                 NUM2=NUM2.replaceAll(" ","");
+                //
+                String NUM22=line2.substring(line2.indexOf("[") + 1, line2.indexOf("]") );
+                NUM22=NUM22.replaceAll(" ","");
+                //
                 int number = Integer.parseInt(NUM1) + Integer.parseInt(NUM2);
-                line = s1 + " " + "#" + " " + number + " " + docs;
+                int number2 = Integer.parseInt(NUM11) + Integer.parseInt(NUM22);
+                line = s1 + " " + "#" + " " + number + " " + docs+"["+number2+"]";
                 writer.write(line + System.getProperty("line.separator"));
                 //int appercances=getAapperances(line);
                 m_Dictionary.get(s1).setPointer(counterLine);
                 if(m_Cache.containsKey(s1))
                 {
                     m_Cache.get(s1).setPointer(counterLine);
-                    m_Cache.get(s1).setFavDocs("()");// need to change in all times
+                    //m_Cache.get(s1).setFavDocs(findThedocs(line));// need to change in all times
                 }
                 counterLine++;
                 write1 = true;
@@ -226,7 +237,7 @@ public class Indexer
                     if(m_Cache.containsKey(s1))
                     {
                         m_Cache.get(s1).setPointer(counterLine);
-                        m_Cache.get(s1).setFavDocs("()");// need to change in all times
+                        m_Cache.get(s1).setFavDocs(findTheDocs(line));// need to change in all times
                     }
                     counterLine++;
                     write1 = true;
@@ -238,10 +249,10 @@ public class Indexer
                     if (!m_Dictionary.containsKey(s2))
                         System.out.println(s2);
                     m_Dictionary.get(s2).setPointer(counterLine);
-                    if(m_Cache.containsKey(s2))
+                    if(m_Cache.containsKey(s1))
                     {
-                        m_Cache.get(s2).setPointer(counterLine);
-                        m_Cache.get(s2).setFavDocs("()");// need to change in all times
+                        m_Cache.get(s1).setPointer(counterLine);
+                        //m_Cache.get(s1).setFavDocs(findThedocs(line));// need to change in all times
                     }
                     counterLine++;
                     write1 = false;
@@ -268,11 +279,11 @@ public class Indexer
                     int appercances=getAapperances(line);
                     String sx=line.substring(0, line.indexOf("#") - 1);
                     if(m_Dictionary.containsKey(sx));
-                        m_Dictionary.get(sx).setPointer(counterLine);
-                    if(m_Cache.containsKey(sx))
+                    m_Dictionary.get(sx).setPointer(counterLine);
+                    if(m_Cache.containsKey(s1))
                     {
-                        m_Cache.get(sx).setPointer(counterLine);
-                        m_Cache.get(sx).setFavDocs("()");// need to change in all times
+                        m_Cache.get(s1).setPointer(counterLine);
+                        //m_Cache.get(s1).setFavDocs(findThedocs(line));// need to change in all times
                     }
 
                     counterLine++;
@@ -296,11 +307,11 @@ public class Indexer
                     int appercances=getAapperances(line2);
                     String s=line2.substring(0, line2.indexOf("#") - 1);
                     if(m_Dictionary.containsKey(s));
-                        m_Dictionary.get(s).setPointer(counterLine);
-                    if(m_Cache.containsKey(s))
+                    m_Dictionary.get(s).setPointer(counterLine);
+                    if(m_Cache.containsKey(s1))
                     {
-                        m_Cache.get(s).setPointer(counterLine);
-                        m_Cache.get(s).setFavDocs("()");// need to change in all times
+                        m_Cache.get(s1).setPointer(counterLine);
+                        //m_Cache.get(s1).setFavDocs(findThedocs(line));// need to change in all times
                     }
                     counterLine++;
                     write2=true;
@@ -390,7 +401,7 @@ public class Indexer
                 }
             }
             if (write1)
-             line = br.readLine();
+                line = br.readLine();
             if (write2)
                 line2 = bs.readLine();
         }
@@ -443,5 +454,41 @@ public class Indexer
             System.out.println("dont have int appernces print in indexr last merge");
         }
         return appercances;
+    }
+
+    public String findTheDocs(String docs){
+        //docs = docs.substring(docs.indexOf("&"),docs.indexOf("["));
+        //String max1="";
+        //String max2="";
+        List<String> allMatchesofdoc ;
+        String regex = "\\{(?s)(.+?)\\}";
+        allMatchesofdoc = new ArrayList<String>();
+        Matcher m = Pattern.compile(regex).matcher(docs);
+        while (m.find()) {
+            //AbstractList<String> allMatchesofdoc;
+            allMatchesofdoc.add(m.group(1));
+        }
+        String docid1="";
+        String docid2="";
+        int max1=0;
+        int max2=0;
+        for (int i =0; i<allMatchesofdoc.size();i++){
+            String s = allMatchesofdoc.get(i);
+            int x = Integer.parseInt(s.substring(s.indexOf("-")+1));
+            if (x>max2){
+                if (x>max1){
+                    max2=max1;
+                    max1=x;
+                    docid2=docid1;
+                    docid1=allMatchesofdoc.get(i);
+                    continue;
+                }
+                max2=x;
+                docid2=allMatchesofdoc.get(i);
+            }
+            //System.out.println(allMatchesofdoc.get(i));
+        }
+        String s = "["+docid1+" "+docid2+"]";
+        return s;
     }
 }

@@ -15,8 +15,8 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import java.io.File;
-import java.io.IOException;
+
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,6 +28,8 @@ public class GUI extends Application {
     TableView <CacheTermGui>cache;
     private boolean doStemming=true;
     TextField postingInput;
+    TextField loadInput;
+    TextField saveInput;
     TextField corpusInput;
     String s="";
     String pathToPosting="C:\\Users\\yaels\\Desktop\\11";
@@ -88,7 +90,7 @@ public class GUI extends Application {
         //browse button
         Button browseButton2 = new Button("browse");
         GridPane.setConstraints(browseButton2, 2, 0);
-        browseButton2.setOnAction(e-> browserLabel());
+        browseButton2.setOnAction(e-> browserPosting());
 
         //posting Label
         Label postingLabel = new Label("Enter path to posting files:");
@@ -168,23 +170,53 @@ public class GUI extends Application {
 
         //save the created files
         Button saveButton = new Button("SAVE");
-        GridPane.setConstraints(saveButton, 2, 7);
+        GridPane.setConstraints(saveButton, 4, 7);
         Label saveLabel = new Label("To save the files:");
-        GridPane.setConstraints(saveLabel, 1, 7);
-        saveButton.setOnAction(e->saveFiles());
+        GridPane.setConstraints(saveLabel, 0, 7);
+        saveButton.setOnAction(e -> {
+            try {
+                saveFiles();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+        });
+
+        Button browseButton3 = new Button("browse");
+        GridPane.setConstraints(browseButton3, 2, 7);
+        browseButton3.setOnAction(e-> browserSave());
+
+        Button browseButton4 = new Button("browse");
+        GridPane.setConstraints(browseButton4, 2, 8);
+        browseButton4.setOnAction(e-> browserLoad());
 
 
         //load the created files
         Button loadButton = new Button("LOAD");
-        GridPane.setConstraints(loadButton, 2, 8);
+        GridPane.setConstraints(loadButton, 4, 8);
         Label loadLabel = new Label("To load the files:");
-        GridPane.setConstraints(loadLabel, 1, 8);
-        loadButton.setOnAction(e->loadFiles());
+        GridPane.setConstraints(loadLabel, 0, 8);
+        loadButton.setOnAction(e -> {
+            try {
+                loadFiles();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            } catch (ClassNotFoundException e1) {
+                e1.printStackTrace();
+            }
+        });
+        loadInput = new TextField();
+        loadInput.setPromptText("load path here");
+        GridPane.setConstraints(loadInput, 1, 8);
+
+        saveInput = new TextField();
+        saveInput.setPromptText("save path here");
+        GridPane.setConstraints(saveInput, 1, 7);
 
         //Add everything to grid
         grid.getChildren().addAll(corpusLabel, corpusInput, postingLabel, postingInput,browseButton, startButton
                 ,stemmerCheck,stemmLabel,resetButton,resetLabel,cacheDisplayButton,displayCacheLabel,saveButton,saveLabel,
-                loadButton,loadLabel,browseButton2,dictionaryDisplayButton,displayDictionaryLabel);
+                loadButton,loadLabel,browseButton2,dictionaryDisplayButton,displayDictionaryLabel,browseButton3,browseButton4,
+                saveInput,loadInput);
 
         Scene scene = new Scene(grid, 500, 300);
         window.setScene(scene);
@@ -316,11 +348,14 @@ public class GUI extends Application {
         cachewindow.setScene(cacheScene);
         cachewindow.show();
     }
-    public void loadFiles(){
-        FileChooser fc=new FileChooser();
-        fc.setInitialDirectory((new File("C:\\")));
-        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("*.txt"));
-        File selectedFile=fc.showOpenDialog(null);
+    public void loadFiles() throws IOException, ClassNotFoundException {
+        FileInputStream fi = new FileInputStream(new File(loadInput+"myDictionary.ser"));
+        FileInputStream fi2 = new FileInputStream(new File(loadInput+"myCache.ser"));
+        ObjectInputStream oi = new ObjectInputStream(fi);
+        ObjectInputStream zi = new ObjectInputStream(fi2);
+        // Read objects
+        indexer.m_Dictionary = (Map<String,TermDic>) oi.readObject();
+        indexer.m_Cache=(Map<String,TermCache>) zi.readObject();
         /**List<File> selectedFiles=fc.showOpenMultipleDialog(null);
          if(selectedFiles!=null)
          {//https://www.youtube.com/watch?v=hNz8Xf4tMI4
@@ -331,11 +366,23 @@ public class GUI extends Application {
          */
     }
 
-    public void saveFiles(){
-        FileChooser fc=new FileChooser();
-        fc.setInitialDirectory((new File("C:\\")));
+    public void saveFiles() throws IOException
+    {
+
+        FileOutputStream fos = new FileOutputStream(saveInput+"\\myDictionary.ser");
+        ObjectOutputStream oos = new ObjectOutputStream(fos);
+        oos.writeObject(indexer.m_Dictionary);
+        oos.close();
+
+        FileOutputStream fos1 = new FileOutputStream(saveInput+"\\myCache.ser");
+        ObjectOutputStream oos1 = new ObjectOutputStream(fos1);
+        oos1.writeObject(indexer.m_Cache);
+        oos1.close();
+
+        //FileChooser fc=new FileChooser();
+        //fc.setInitialDirectory((new File("C:\\")));
         //fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("*.t));
-        File selectedFile=fc.showSaveDialog(null);
+        //File selectedFile=fc.showSaveDialog(null);
         /**List<File> selectedFiles=fc.showOpenMultipleDialog(null);
          if(selectedFiles!=null)
          {//https://www.youtube.com/watch?v=hNz8Xf4tMI4
@@ -354,7 +401,7 @@ public class GUI extends Application {
         postingInput.setText(s);
 
     }
-    public void browserLabel()
+    public void browserPosting()
     {
         DirectoryChooser dc=new DirectoryChooser();
         dc.setInitialDirectory((new File("C:\\")));
@@ -363,15 +410,66 @@ public class GUI extends Application {
         corpusInput.setText(s);
     }
 
+    public void browserSave()
+    {
+        DirectoryChooser dc=new DirectoryChooser();
+        dc.setInitialDirectory((new File("C:\\")));
+        File selectedFile=dc.showDialog(null);
+        s=selectedFile.getAbsolutePath();
+        saveInput.setText(s);
+    }
 
-    public void deleteReset()
+    public void browserLoad()
+    {
+        DirectoryChooser dc=new DirectoryChooser();
+        dc.setInitialDirectory((new File("C:\\")));
+        File selectedFile=dc.showDialog(null);
+        s=selectedFile.getAbsolutePath();
+        loadInput.setText(s);
+    }
+
+
+
+
+    public void deleteReset(String path)
     {
         //https://docs.oracle.com/javase/tutorial/essential/io/delete.html
+        String directoryPath = path;
+        File file = new File(directoryPath);
+
+        try {
+            //Deleting the directory recursively.
+            delete(file);
+            System.out.println("Directory has been deleted recursively !");
+        } catch (IOException e) {
+            System.out.println("Problem occurs when deleting the directory : " + directoryPath);
+            e.printStackTrace();
+        }
+
     }
+
+    private static void delete(File file) throws IOException {
+
+        for (File childFile : file.listFiles()) {
+
+            if (childFile.isDirectory()) {
+                delete(childFile);
+            } else {
+                if (!childFile.delete()) {
+                    throw new IOException();
+                }
+            }
+        }
+
+        if (!file.delete()) {
+            throw new IOException();
+        }
+    }
+
     public void finishData()
     {//present all of the Data that is needed aout the program
         AlertBox.display("Program Information",
-                "time of running: no paths had been written!"+
+                "time of running:"+totalTime+
                         "number of files indexed:"+
                         "size of index in Bytes:"+
                         "size of cache in Bytes:");

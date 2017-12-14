@@ -42,9 +42,32 @@ public class Main {
          sdot.append("2");
          System.out.println(sdot.toString());
          */
-         String tt = "-a";
-         String id ="123";
-
+         //String tt = "-a";
+         //String id ="123";
+        //Map <String,Integer> map= new HashMap<>();
+        //map.put("doc1",1);
+        //Term term= new Term("year",map);
+        //System.out.println(term);
+        String line ="year #1 &doc1-1 [1]";
+        String line2="year #2 &doc2-2 [3]";
+        String NUM1=line.substring(line.indexOf("#") + 1, line.indexOf("&") - 1);
+        NUM1=NUM1.replaceAll(" ","");
+        //
+        String NUM11=line.substring(line.indexOf("[") + 1, line.indexOf("]") );
+        NUM11=NUM11.replaceAll(" ","");
+        //
+        String NUM2=line2.substring(line2.indexOf("#") + 1, line2.indexOf("&") - 1);
+        NUM2=NUM2.replaceAll(" ","");
+        //
+        String NUM22=line2.substring(line2.indexOf("[") + 1, line2.indexOf("]") );
+        NUM22=NUM22.replaceAll(" ","");
+        //
+        int number = Integer.parseInt(NUM1) + Integer.parseInt(NUM2);
+        System.out.println(NUM11);
+        System.out.println(NUM22);
+        int number2 = Integer.parseInt(NUM11) + Integer.parseInt(NUM22);
+        line = "year" + " " + "#" + " " + number + " " +"["+number2+"]";
+        System.out.println(line);
          /**Document dd = new Document(id,tt,0,0,"dk");
          ReadFile r = new ReadFile("C:\\");
          r.breakToFiles();
@@ -54,7 +77,7 @@ public class Main {
         long startTime = System.currentTimeMillis();
         //ReadFile rf=new ReadFile("C:\\Users\\linoy\\Desktop\\searching project\\corpus","");
 
-       /** ReadFile r = new ReadFile("C:\\");
+        /**ReadFile r = new ReadFile("C:\\");
 
          int i = 0;
          while (r.nextFile<r.filesPaths.size())
@@ -64,7 +87,8 @@ public class Main {
          Parser P = new Parser(r.stopword ,r.documents,true);
          P.ParseAll();
          i++;
-         }*/
+         }
+         */
         /** Indexer N;
          Map<String,Term>mp_terms;
          mp_terms=new TreeMap<>();

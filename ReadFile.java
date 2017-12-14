@@ -62,7 +62,7 @@ public class ReadFile
         documents = new HashMap<>();
         sizofmydictionary=documents.size();
         allMatchesofdoc = new ArrayList<String>();
-        for (int i = nextFile;i <this.filesPaths.size()&& i < nextFile+10 ;i++)
+        for (int i = nextFile;i <this.filesPaths.size()&& i < nextFile+40 ;i++)
         {
             try {
                 mydocuments.add(readFileAsString(this.filesPaths.get(i)));
@@ -72,7 +72,7 @@ public class ReadFile
 
 
         }
-        nextFile=nextFile+10;
+        nextFile=nextFile+40;
         mydocuments.forEach(s -> {
             breakToDocs(s);
 
