@@ -164,7 +164,7 @@ public class Parser
                     else if(termsDoc[i].length()>0){
                         //if((curTerm.toUpperCase()).matches("^(?=.*[A-Z])(?=.*[0-9])[A-Z0-9]+$"))
                           //  continue;
-                         //termsDoc[i]=termsDoc[i].replaceAll("[<>%^\\.\\\\\\s]","");
+                         termsDoc[i]=termsDoc[i].replaceAll("[%\\.// \\\\\\s]","");
                         if (termsDoc[i].length()>0&&Character.isUpperCase(termsDoc[i].charAt(0)))
                         {//check if the term capital letter up to phrase of 4 words.
                             String str1 = "", str2 = "", total = "";
@@ -181,7 +181,8 @@ public class Parser
                         else
                         {
                             if(termsDoc[i].length()>0) {
-                                termsDoc[i] = termsDoc[i].replaceAll("\\s+", "");
+                               // termsDoc[i] = termsDoc[i].replaceAll("[\\s % \\.////]", "");
+                               // termsDoc[i]=termsDoc[i].replaceAll(".")
                             if ((!m_StopWords.containsKey(termsDoc[i].toLowerCase())) && termsDoc[i].contains("\'"))
                                 termsDoc[i] = handleApostrophe(termsDoc[i]);
                             addToTerm(termsDoc[i]);
@@ -214,6 +215,8 @@ public class Parser
                         str=strafter;
                     }
                 }
+               // if(str.equals("illumin"))
+                 //   System.out.print("ilumin add to term");
                 if (m_terms.containsKey(str)) {
                     //think what have to update
                     m_terms.get(str).setTotalApperance(1);//add 1 to total number of appernces in the entire magar
@@ -232,13 +235,14 @@ public class Parser
                     }
                 } else
                 {// first time term
-                    Map<String, Integer> docss = new HashMap<>();//jkdj
+                    Map<String, Integer> docss = new HashMap<>();
+                    //jkdj
                     docss.put(currDoc, 1);
                     Term newterm = new Term(str, docss);
-
                     m_terms.put(str, newterm);
                     m_documents.get(currDoc).max_tf = m_terms.get(str).docs.get(currDoc);
-                    newterm.docs.put(currDoc, 1);//update the list of docs the term is in
+                    //newterm.docs.put(currDoc, 1);//update the list of docs the term is in
+
                 }
             }
         }

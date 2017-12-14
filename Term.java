@@ -14,8 +14,8 @@ public class Term
 
     public Term( String term, Map<String, Integer> docs) {
         _term=term;
-        this.docs = docs;
-        this.numOfDocIDF = docs.size();
+        this.docs = new HashMap<>(docs);
+        this.numOfDocIDF =1;
         totalApperance=1;
     }
     @Override
@@ -35,10 +35,10 @@ public class Term
 
     public String getnumOfDocIDFString()
     {
-        String num="";
-        List sortedKeys=new ArrayList(docs.values());
-        Collections.sort(sortedKeys);
-        num=Integer.toString(numOfDocIDF);
+       // String num="";
+        //List sortedKeys=new ArrayList(docs.values());
+        //Collections.sort(sortedKeys);
+        String num=Integer.toString(numOfDocIDF);
         return num;
     }
 
@@ -68,5 +68,15 @@ public class Term
     }
     public void setNumOfDocIDF(int num){
         this.numOfDocIDF=this.numOfDocIDF+num;
+    }
+    public void addToDocs(String docnum)
+    {
+        if(docs.containsKey(docnum))
+        {
+            //docs.put(currDoc, m_terms.get(str).docs.get(currDoc) + 1);
+        }
+        else{
+
+        }
     }
 }

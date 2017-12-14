@@ -6,7 +6,7 @@ import java.lang.*;
 public class Indexer
 {
     private Map<String,Term>mp_terms;
-    public Map<String,TermDic> m_Dictionary;
+    public static Map<String,TermDic> m_Dictionary=new HashMap<>();
     //private final List sortedTerms;
     public Map<String,TermCache>m_Cache;
     private int mytxt;
@@ -18,7 +18,6 @@ public class Indexer
         this.mypath="C:\\Users\\yaels\\Desktop\\11\\";
         mp_terms=new TreeMap<>(parsedWords);
         mytxt = i;
-        m_Dictionary=new HashMap<>();
         m_Cache=new HashMap<>();
         newLine = System.getProperty("line.separator");
         www();
@@ -43,7 +42,7 @@ public class Indexer
             }
             else
                 m_Dictionary.put(termo, new TermDic(termo,mp_terms.get(termo).getTotalApperance(),
-                        mp_terms.get(termo).getNumOfDocIDF(),0));
+                       0, mp_terms.get(termo).getNumOfDocIDF()));
             String value = mp_terms.get(termo).toString();//get the string that describe the term
             WriteToTxt(value,writer);
         }

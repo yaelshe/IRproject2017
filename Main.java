@@ -42,13 +42,13 @@ public class Main {
          sdot.append("2");
          System.out.println(sdot.toString());
          */
-        /** String tt = "-a";
+         String tt = "-a";
          String id ="123";
 
-         IRproject.Document dd = new IRproject.Document(id,tt,0,0,"dk");
-         IRproject.ReadFile r = new IRproject.ReadFile("C:\\");
+         /**Document dd = new Document(id,tt,0,0,"dk");
+         ReadFile r = new ReadFile("C:\\");
          r.breakToFiles();
-         IRproject.Parse P = new IRproject.Parse(r.stopword,r.documents);
+         Parse P = new Parse(r.stopword,r.documents);
          P.parseDoc(dd);
          */
         long startTime = System.currentTimeMillis();
@@ -65,14 +65,14 @@ public class Main {
          P.ParseAll();
          i++;
          }*/
-         Indexer N;
+        /** Indexer N;
          Map<String,Term>mp_terms;
          mp_terms=new TreeMap<>();
 
          N= new Indexer(mp_terms,0,"C:\\Users\\ibrahim\\Desktop\\11\\");
          N.mergTwoFileLast("C:\\Users\\yaels\\Desktop\\11\\7\\0.txt","C:\\Users\\yaels\\Desktop\\11\\7\\1.txt","C:\\Users\\yaels\\Desktop\\11\\8\\0");
          //N.mergAllFile();
-
+*/
 
         /**String text= " fdnjdfndj fdnjfdnjd fdf-fedd cddf-fdd - - -- ds -f- -------------3 4----------------- ";
 
@@ -97,8 +97,12 @@ public class Main {
          while(sb.indexOf("--")!=-1)
          sb.deleteCharAt((sb.indexOf("--")));
          */
-        //String s=("MI-17--and");
-       // s=removeExtra(s);
+        String s="% 12/1.1/av\\c";
+        System.out.println((s));
+        s=removeExtra(s);
+        System.out.println((s));
+        s=s.replaceAll("[%\\.// \\\\\\s]","");
+        System.out.println((s));
        // s=handleMakaf(s);
         //s=s.replaceAll(" ","");
        // while(s.indexOf("--")!=-1)
@@ -320,7 +324,8 @@ public class Main {
     }
     public static String removeExtra(String str)
     {
-        str=str.replaceAll("[,$#!&?*(){}\":;+|\\[\\] \\s ]","");
+        //str=str.replaceAll("[,$#!&?*(){}\":;+|\\[\\] \\s\\\\ ]","");
+        str=str.replaceAll("[,$#!&?*()<>^{}\\\":;+|\\[\\]\\s\\\\]","");
         StringBuilder sdot= new StringBuilder();
         if (str.length()>0) {
             char last = str.charAt(str.length() - 1);

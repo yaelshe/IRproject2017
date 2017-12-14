@@ -234,6 +234,7 @@ public class GUI extends Application {
                         indexer =new Indexer(P.m_terms,i,pathToPosting);//changed to i
                     } catch (IOException e) {
                         e.printStackTrace();
+                        System.out.println("here dosnt");
                     }
                     i++;
                     //indexer=new Indexer();//add the m_terms and the path for posting files
