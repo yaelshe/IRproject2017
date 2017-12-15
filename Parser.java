@@ -70,20 +70,22 @@ public class Parser
         String []termsDoc=text.split("[\\s\\-]");
         //System.out.println(currDoc+"i split the text of it");
         int count;
+        String curTerm;
         for(int i=0;i<termsDoc.length;i++)
         {
+            curTerm=termsDoc[i];
             //if(termsDoc[i].length()<1||(termsDoc[i].toUpperCase()).matches("^(?=.*[A-Z])(?=.*[0-9])[A-Z0-9]+$"))
             //   continue;
             count=0;
             //String SSS=termsDoc[i].replaceAll("-","");
-            if((termsDoc[i].length()==0)|| ((termsDoc[i].trim().length()) == 0))
+            if((curTerm.length()==0)|| ((curTerm.trim().length()) == 0))
                 //||SSS.trim().length()==0)
                 continue;
-            termsDoc[i]= removeExtra(termsDoc[i]);
-            if (termsDoc[i].length()>0)
+            curTerm= removeExtra(curTerm);
+            if (curTerm.length()>0)
             //&&)
             {
-                if (!m_StopWords.containsKey(termsDoc[i]))
+                if (!m_StopWords.containsKey(curTerm))
                 {//maybe remove *******??????
                     /** if(termsDoc[i].indexOf('-')!=-1&&termsDoc[i].length()>1)
                      {
@@ -92,21 +94,27 @@ public class Parser
                      continue;
                      }
                      */
-                    if(termsDoc[i].charAt(0)=='$')
+                    if(curTerm.charAt(0)=='$')
                     {
-                        addToTerm(termsDoc[i].substring(0,termsDoc[i].length()-1)+" dollar");
+                        while(curTerm.length()>0&&curTerm.charAt(0)=='$')
+                            curTerm=curTerm.substring(1);
+                        if(curTerm.equals("")||curTerm.length()==0){
+                            addToTerm("dollar");;
+                            continue;
+                        }
+                        addToTerm(curTerm+" dollar");
                         continue;
                     }
 
-                    if(isNumber(termsDoc[i]))
+                    if(isNumber(curTerm))
                     {
-                        termsDoc[i] = numbersHandler(termsDoc[i]);// numb 25-27,21/05/1991,29-word done
-                        if(termsDoc[i].length()>0)
+                        curTerm = numbersHandler(curTerm);// numb 25-27,21/05/1991,29-word done
+                        if(curTerm.length()>0)
                         {
-                            if((!termsDoc[i].contains("percent"))&&((i+1<termsDoc.length && ((removeExtra(termsDoc[i + 1])).toLowerCase()).equals("percentage"))))
+                            if((!curTerm.contains("percent"))&&((i+1<termsDoc.length && ((removeExtra(termsDoc[i + 1])).toLowerCase()).equals("percentage"))))
                             {//check if percent
-                                termsDoc[i]=termsDoc[i]+ " percent";
-                                addToTerm(termsDoc[i]);
+                                curTerm=curTerm+ " percent";
+                                addToTerm(curTerm);
                                 i++;
                                 continue;
                             }
@@ -123,14 +131,14 @@ public class Parser
                                 {
                                     s3 = removeExtra(termsDoc[i + 1]);
                                 }
-                                if ((i+1<termsDoc[i].length()||i-1>0)&&(isDate(s1, s3) && !termsDoc[i].contains(".")))
+                                if ((i+1<curTerm.length()||i-1>0)&&(isDate(s1, s3) && !curTerm.contains(".")))
                                 {//216
                                     String s4="";
                                     if (i+2<termsDoc.length)
                                     {
                                         s4 = removeExtra(termsDoc[i + 2]);
                                     }
-                                    String mydate = dateHandler(s1, termsDoc[i], s3,s4 );
+                                    String mydate = dateHandler(s1, curTerm, s3,s4 );
                                     if (mydate.length()>7)
                                     {
                                         if (Months.containsKey(s1))
@@ -154,16 +162,16 @@ public class Parser
                                 }
                             }
                             //termsDoc[i]=termsDoc[i].replaceAll("[<>%^\\\\]","");
-                            addToTerm(termsDoc[i]);
+                            addToTerm(curTerm);
                             continue;
                         }
                     }//not a number
 
-                    else if(termsDoc[i].length()>0){
+                    else if(curTerm.length()>0){
                         //if((curTerm.toUpperCase()).matches("^(?=.*[A-Z])(?=.*[0-9])[A-Z0-9]+$"))
                         //  continue;
-                        termsDoc[i]=termsDoc[i].replaceAll("[$%\\.// \\\\\\s]","");
-                        if (termsDoc[i].length()>0&&Character.isUpperCase(termsDoc[i].charAt(0)))
+                        curTerm=curTerm.replaceAll("[$%\\.// \\\\\\s]","");
+                        if (curTerm.length()>0&&Character.isUpperCase(curTerm.charAt(0)))
                         {//check if the term capital letter up to phrase of 4 words.
                             String str1 = "", str2 = "", total = "";
                             if (i + 1 < termsDoc.length) {
@@ -172,18 +180,18 @@ public class Parser
                                     str2 = termsDoc[i + 2];
                                 }
                             }
-                            count=capitalTerm(termsDoc[i], removeExtra(str1), removeExtra(str2));
+                            count=capitalTerm(curTerm, removeExtra(str1), removeExtra(str2));
                             i = i + count - 1;
                             continue;
                         }
                         else
                         {
-                            if(termsDoc[i].length()>0) {
+                            if(curTerm.length()>0) {
                                 // termsDoc[i] = termsDoc[i].replaceAll("[\\s % \\.////]", "");
                                 // termsDoc[i]=termsDoc[i].replaceAll(".")
-                                if ((!m_StopWords.containsKey(termsDoc[i].toLowerCase())) && termsDoc[i].contains("\'"))
-                                    termsDoc[i] = handleApostrophe(termsDoc[i]);
-                                addToTerm(termsDoc[i]);
+                                if ((!m_StopWords.containsKey(curTerm.toLowerCase())) && curTerm.contains("\'"))
+                                    curTerm = handleApostrophe(curTerm);
+                                addToTerm(curTerm);
                                 continue;
                             }
                         }

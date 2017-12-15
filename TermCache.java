@@ -34,4 +34,6 @@ public class TermCache {
     public void setPointer(int pointer) {
         this.pointer = pointer;
     }
+
+
 }

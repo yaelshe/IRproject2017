@@ -55,14 +55,14 @@ public class GUI extends Application {
         grid.setHgap(10);
 
         //table for dictionary
-        TableColumn<DictionaryTermGui,String> termCol=new TableColumn<>("IRproject.Term");
+        /**TableColumn<DictionaryTermGui,String> termCol=new TableColumn<>("IRproject.Term");
         termCol.setMinWidth(200);
         termCol.setCellValueFactory(new PropertyValueFactory<>("term"));
 
         TableColumn<DictionaryTermGui,String>amountCol=new TableColumn<>("Quantity");
         amountCol.setMinWidth(100);
         amountCol.setCellValueFactory(new PropertyValueFactory<>("amount"));
-
+*/
         dictionary = new ListView<>();
 
 
@@ -305,14 +305,13 @@ public class GUI extends Application {
     {//get the items for the dictionary
         ObservableList<CacheTermGui> termsCache= FXCollections.observableArrayList();
         cache =new TableView<>();
-        ObservableList<DictionaryTermGui> termsDictionary= FXCollections.observableArrayList();
+       // ObservableList<CacheTermGui> termsDictionary= FXCollections.observableArrayList();
         Map<String,TermCache>cachesss= indexer.m_Cache;//change to public for dictionary in indexer
         //**********need to add the words from the dictionary**************
         for(String str: cachesss.keySet())
         {
             //String i="";
-            //termsDictionary.add(new CacheTermGui(str,chachess.get(str).getFavdocs));
-
+            termsCache.add(new CacheTermGui(str,cachesss.get(str).getFavDocs()));
         }
         return termsCache;
     }

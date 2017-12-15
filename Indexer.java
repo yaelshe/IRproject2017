@@ -17,7 +17,7 @@ public class Indexer
 
 
     public Indexer(Map<String,Term> parsedWords,int i,String mypath) throws IOException {//change the i to path ....
-        this.mypath="C:\\Users\\ibrahim\\Desktop\\11\\";
+        this.mypath="D:\\11\\";
         mp_terms=new TreeMap<>(parsedWords);
         mytxt = i;
         newLine = System.getProperty("line.separator");
@@ -66,7 +66,7 @@ public class Indexer
         File directory = new File(mypath+"\\1");
         directory.mkdirs();
         String path3=directory.getCanonicalPath();
-        for (int j=0;j<=181;j=j+2){
+        /**for (int j=0;j<=181;j=j+2){
             String s =mergTwoFile(mypath+j+".txt",mypath+(j+1)+".txt",path3+"\\"+(j/2));
             System.out.println(j);
         }
@@ -82,12 +82,12 @@ public class Indexer
         thepath = directory.getAbsolutePath();
         directory=new File(mypath+"\\3");
         directory.mkdirs();
-        path3=mypath+"3";
+        path3=mypath+"3";*/
         for (int j=0;j<=45;j=j+2){
-            String s =mergTwoFile(thepath+"\\"+j+".txt",thepath+"\\"+(j+1)+".txt",path3+"\\"+(j/2));
+            String s =mergTwoFile(mypath+j+".txt",mypath+(j+1)+".txt",path3+"\\"+(j/2));
             System.out.println(j);
         }
-        thepath = directory.getAbsolutePath();
+        String thepath = directory.getAbsolutePath();
         directory=new File(mypath+"\\4");
         directory.mkdirs();
         path3=mypath+"4";
@@ -95,7 +95,7 @@ public class Indexer
             String s =mergTwoFile(thepath+"\\"+j+".txt",thepath+"\\"+(j+1)+".txt",path3+"\\"+(j/2));
             System.out.println(j);
         }
-        t=mergTwoFile(thepath+"\\"+22+".txt",logFile.getAbsolutePath(),path3+"\\11");
+        String t=mergTwoFile(thepath+"\\"+22+".txt",logFile.getAbsolutePath(),path3+"\\11");
         thepath = directory.getAbsolutePath();
         directory=new File(mypath+"\\5");
         directory.mkdirs();
@@ -135,6 +135,8 @@ public class Indexer
         //create the dictionary and cache
         List <TermDic>sortedTerms=new ArrayList(m_Dictionary.values());
         Collections.sort(sortedTerms);
+        int sizezush=sortedTerms.size();
+
         for(int m=0;m<10000;m++)
         {
             m_Cache.put(sortedTerms.get(sortedTerms.size()-1-m).getName(),
@@ -167,10 +169,10 @@ public class Indexer
              if (write1) {
              line = br.readLine();
 
-             //System.out.println(line);*/
+             //System.out.println(line);
+             */
             if (line != null&&!line.equals("null")){
                 //System.out.println(line);
-
                 s1 = line.substring(0, line.indexOf("#") - 1);
                 //System.out.println(s1);
             }
@@ -199,7 +201,7 @@ public class Indexer
             if (s1.equals(s2))
             {//if it's the same term
 
-                String docs = line.substring(line.indexOf("&"), line.length()) + line2.substring(line2.indexOf("&") + 1, line2.length());
+                String docs = line.substring(line.indexOf("&"), line.indexOf("[")) + line2.substring(line2.indexOf("&") + 1, line2.indexOf("["));
                 String NUM1=line.substring(line.indexOf("#") + 1, line.indexOf("&") - 1);
                 NUM1=NUM1.replaceAll(" ","");
                 //
@@ -221,7 +223,7 @@ public class Indexer
                 if(m_Cache.containsKey(s1))
                 {
                     m_Cache.get(s1).setPointer(counterLine);
-                    //m_Cache.get(s1).setFavDocs(findThedocs(line));// need to change in all times
+                    m_Cache.get(s1).setFavDocs(findTheDocs(line));// need to change in all times
                 }
                 counterLine++;
                 write1 = true;
@@ -249,10 +251,10 @@ public class Indexer
                     if (!m_Dictionary.containsKey(s2))
                         System.out.println(s2);
                     m_Dictionary.get(s2).setPointer(counterLine);
-                    if(m_Cache.containsKey(s1))
+                    if(m_Cache.containsKey(s2))
                     {
-                        m_Cache.get(s1).setPointer(counterLine);
-                        //m_Cache.get(s1).setFavDocs(findThedocs(line));// need to change in all times
+                        m_Cache.get(s2).setPointer(counterLine);
+                        m_Cache.get(s2).setFavDocs(findTheDocs(line2));// need to change in all times
                     }
                     counterLine++;
                     write1 = false;
@@ -275,17 +277,18 @@ public class Indexer
                 }
                 if (!write1)
                 {
+                    System.out.println(line+"this line sucks 280 indexer");
                     writer.write(line + System.getProperty("line.separator"));
-                    int appercances=getAapperances(line);
-                    String sx=line.substring(0, line.indexOf("#") - 1);
-                    if(m_Dictionary.containsKey(sx));
-                    m_Dictionary.get(sx).setPointer(counterLine);
-                    if(m_Cache.containsKey(s1))
-                    {
-                        m_Cache.get(s1).setPointer(counterLine);
-                        //m_Cache.get(s1).setFavDocs(findThedocs(line));// need to change in all times
+                    //int appercances=getAapperances(line);
+                    if(line!=null) {
+                        String sx = line.substring(0, line.indexOf("#") - 1);
+                        if (m_Dictionary.containsKey(sx)) ;
+                        m_Dictionary.get(sx).setPointer(counterLine);
+                        if (m_Cache.containsKey(sx)) {
+                            m_Cache.get(sx).setPointer(counterLine);
+                            m_Cache.get(sx).setFavDocs(findTheDocs(line));// need to change in all times
+                        }
                     }
-
                     counterLine++;
                     write1=true;
                 }
@@ -304,14 +307,15 @@ public class Indexer
                 if (!write2)
                 {
                     writer.write(line2 + System.getProperty("line.separator"));
-                    int appercances=getAapperances(line2);
-                    String s=line2.substring(0, line2.indexOf("#") - 1);
-                    if(m_Dictionary.containsKey(s));
-                    m_Dictionary.get(s).setPointer(counterLine);
-                    if(m_Cache.containsKey(s1))
-                    {
-                        m_Cache.get(s1).setPointer(counterLine);
-                        //m_Cache.get(s1).setFavDocs(findThedocs(line));// need to change in all times
+                    if(line2!=null) {
+                        //int appercances=getAapperances(line2);
+                        String s = line2.substring(0, line2.indexOf("#") - 1);
+                        if (m_Dictionary.containsKey(s)) ;
+                        m_Dictionary.get(s).setPointer(counterLine);
+                        if (m_Cache.containsKey(s)) {
+                            m_Cache.get(s).setPointer(counterLine);
+                            m_Cache.get(s).setFavDocs(findTheDocs(line2));// need to change in all times
+                        }
                     }
                     counterLine++;
                     write2=true;
@@ -373,14 +377,22 @@ public class Indexer
              e.printStackTrace();
              }*/
             if (s1.equals(s2)) {
-                String docs = line.substring(line.indexOf("&"), line.length()) + line2.substring(line2.indexOf("&") + 1, line2.length());
+                String docs = line.substring(line.indexOf("&"), line.indexOf("[")) + line2.substring(line2.indexOf("&") + 1, line2.indexOf("["));
                 String NUM1=line.substring(line.indexOf("#") + 1, line.indexOf("&") - 1);
                 NUM1=NUM1.replaceAll(" ","");
-
+                //
+                String NUM11=line.substring(line.indexOf("[") + 1, line.indexOf("]") );
+                NUM11=NUM11.replaceAll(" ","");
+                //
                 String NUM2=line2.substring(line2.indexOf("#") + 1, line2.indexOf("&") - 1);
                 NUM2=NUM2.replaceAll(" ","");
+                //
+                String NUM22=line2.substring(line2.indexOf("[") + 1, line2.indexOf("]") );
+                NUM22=NUM22.replaceAll(" ","");
+                //
                 int number = Integer.parseInt(NUM1) + Integer.parseInt(NUM2);
-                line = s1 + " " + "#" + " " + number + " " + docs;
+                int number2 = Integer.parseInt(NUM11) + Integer.parseInt(NUM22);
+                line = s1 + " " + "#" + " " + number + " " + docs+"["+number2+"]";
                 writer.write(line + System.getProperty("line.separator"));
                 write1 = true;
                 write2 = true;
@@ -448,7 +460,7 @@ public class Indexer
         int last=line.indexOf("]");
         int appercances=0;
         try {
-            appercances = Integer.parseInt(line.substring(first, last));
+            appercances = Integer.parseInt((line.substring(first+1, last)).trim());
         }
         catch(NumberFormatException nfe) {
             System.out.println("dont have int appernces print in indexr last merge");
@@ -474,7 +486,7 @@ public class Indexer
         int max2=0;
         for (int i =0; i<allMatchesofdoc.size();i++){
             String s = allMatchesofdoc.get(i);
-            int x = Integer.parseInt(s.substring(s.indexOf("-")+1));
+            int x = Integer.parseInt(s.substring(s.indexOf(":")+1));
             if (x>max2){
                 if (x>max1){
                     max2=max1;

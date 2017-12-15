@@ -6,8 +6,10 @@ public class CacheTermGui {
 
 
 
-    public CacheTermGui(String term) {
+    public CacheTermGui(String term,String favsdocss) {
+
         this.term = term;
+        this.docsApper=favsdocss;
     }
 
     public String getTerm() {

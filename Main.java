@@ -48,7 +48,7 @@ public class Main {
         //map.put("doc1",1);
         //Term term= new Term("year",map);
         //System.out.println(term);
-        String line ="year #1 &doc1-1 [1]";
+       /** String line ="year #1 &doc1-1 [1]";
         String line2="year #2 &doc2-2 [3]";
         String NUM1=line.substring(line.indexOf("#") + 1, line.indexOf("&") - 1);
         NUM1=NUM1.replaceAll(" ","");
@@ -68,6 +68,7 @@ public class Main {
         int number2 = Integer.parseInt(NUM11) + Integer.parseInt(NUM22);
         line = "year" + " " + "#" + " " + number + " " +"["+number2+"]";
         System.out.println(line);
+        */
          /**Document dd = new Document(id,tt,0,0,"dk");
          ReadFile r = new ReadFile("C:\\");
          r.breakToFiles();
@@ -97,7 +98,28 @@ public class Main {
          N.mergTwoFileLast("C:\\Users\\yaels\\Desktop\\11\\7\\0.txt","C:\\Users\\yaels\\Desktop\\11\\7\\1.txt","C:\\Users\\yaels\\Desktop\\11\\8\\0");
          //N.mergAllFile();
 */
-
+       /** String line= "fdmdmf 78 ( hh) [ 123] grg";
+        int first=line.indexOf("[");
+        int last=line.indexOf("]");
+        System.out.println(line);
+        int appercances=0;
+        appercances = Integer.parseInt((line.substring(first+1, last)).trim());
+        System.out.println(appercances+"number between brackets");
+        */
+       String s="$$$$$$$$$$$$";
+        if(s.charAt(0)=='$')
+        {
+            while(s.length()>0&&s.charAt(0)=='$')
+                s=s.substring(1);
+            if(s.equals("")||s.length()==0){
+                System.out.println("dollar");;
+               // continue;
+            }
+            else
+            System.out.println(s+" dollar");
+            //continue;
+        }
+        System.out.println("sweeet"+s+"nothing");
         /**String text= " fdnjdfndj fdnjfdnjd fdf-fedd cddf-fdd - - -- ds -f- -------------3 4----------------- ";
 
         String []termsDoc=text.split("[\\s+]");
@@ -121,12 +143,13 @@ public class Main {
          while(sb.indexOf("--")!=-1)
          sb.deleteCharAt((sb.indexOf("--")));
          */
-        String s="% 12/1.1/av\\c";
+       /** String s="% 12/1.1/av\\c";
         System.out.println((s));
         s=removeExtra(s);
         System.out.println((s));
         s=s.replaceAll("[%\\.// \\\\\\s]","");
         System.out.println((s));
+        */
        // s=handleMakaf(s);
         //s=s.replaceAll(" ","");
        // while(s.indexOf("--")!=-1)
