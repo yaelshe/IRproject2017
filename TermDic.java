@@ -1,6 +1,6 @@
 package SearchEngine;
 
-public class TermDic implements Comparable {
+public class TermDic implements Comparable  {
     String name;
     int apperances;
     int pointer;//row number in posting file
