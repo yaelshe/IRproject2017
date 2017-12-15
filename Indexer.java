@@ -280,7 +280,7 @@ public class Indexer
                     System.out.println(line+"this line sucks 280 indexer");
                     writer.write(line + System.getProperty("line.separator"));
                     //int appercances=getAapperances(line);
-                    if(line!=null) {
+                    if(line!=null&&!line.equals("null")) {
                         String sx = line.substring(0, line.indexOf("#") - 1);
                         if (m_Dictionary.containsKey(sx)) ;
                         m_Dictionary.get(sx).setPointer(counterLine);
@@ -307,7 +307,7 @@ public class Indexer
                 if (!write2)
                 {
                     writer.write(line2 + System.getProperty("line.separator"));
-                    if(line2!=null) {
+                    if(line2!=null&&!line2.equals("null")) {
                         //int appercances=getAapperances(line2);
                         String s = line2.substring(0, line2.indexOf("#") - 1);
                         if (m_Dictionary.containsKey(s)) ;
