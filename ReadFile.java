@@ -75,8 +75,8 @@ public class ReadFile
         nextFile=nextFile+40;
         mydocuments.forEach(s -> {
             breakToDocs(s);
-
         });
+        
     }
 
     private  void breakToDocs(String stringfile)

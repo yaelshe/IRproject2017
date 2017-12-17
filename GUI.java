@@ -258,7 +258,10 @@ public class GUI extends Application {
                 while (r.nextFile<r.filesPaths.size())
                 {
                     System.out.println(i);
+                    Runtime instance=Runtime.getRuntime();
+                    System.out.println((instance.totalMemory())/(1024*1024)+"fd");
                     r.breakToFiles();
+                    System.out.println((instance.totalMemory())/(1024*1024)+"fdd");
                     P = new Parser(r.stopword,r.documents,doStemming);
                     P.ParseAll();
                     //indexer=new Indexer(P.m_terms,0,pathToPosting);

@@ -25,7 +25,7 @@ public class Indexer
     }
     public void www() throws IOException
     {
-        //NEED TO CHANGE BACK TO GET MYPART !!!!!!!!!!!!!!!!!!!!!!!
+        //NEED TO CHANGE BACK TO GET MYPAR !!!!!!!!!!!!!!!!!!!!!!!
         //File logFile=new File("C:\\Users\\yaels\\Desktop\\11\\ibr.txt");
         File logFile=new File(mypath+mytxt+".txt");
         BufferedWriter writer = new BufferedWriter(new FileWriter(logFile));
