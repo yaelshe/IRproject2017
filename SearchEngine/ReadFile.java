@@ -69,18 +69,18 @@ public class ReadFile
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
-
         }
         nextFile=nextFile+40;
         mydocuments.forEach(s -> {
             breakToDocs(s);
         });
-        
+        mydocuments.clear();
     }
 
     private  void breakToDocs(String stringfile)
     {
+        //allMatchesofdoc.clear();
+        allMatchesofdoc = new ArrayList<String>();
         String regex = "<DOC>(?s)(.+?)</DOC>";
         //String regex1 = "<TEXT>(?s)(.+?)</TEXT>";
         Matcher m = Pattern.compile(regex).matcher(stringfile);
@@ -88,23 +88,28 @@ public class ReadFile
             allMatchesofdoc.add(m.group(1));
         }
 
-        for(int i=sizofmydictionary;i<allMatchesofdoc.size();i++)
+        for(int i=0;i<allMatchesofdoc.size();i++)
         {
+            // mytext=new
             if (allMatchesofdoc.get(i).contains("<TEXT>")){
                 int first = allMatchesofdoc.get(i).indexOf("<TEXT>");
                 int last = allMatchesofdoc.get(i).indexOf("</TEXT>");
-                String mytext = allMatchesofdoc.get(i).substring(first+6,last);
+                String s =allMatchesofdoc.get(i).substring(first+6,last);
+                int k = s.length();
+                StringBuilder mytext = new StringBuilder(k);
+                mytext.append(s);
                 if(mytext.length()>0) {
                     first = allMatchesofdoc.get(i).indexOf("<DOCNO>");
                     last = allMatchesofdoc.get(i).indexOf("</DOCNO>");
                     String mydocno = allMatchesofdoc.get(i).substring(first+7,last);
-                    Document S = new Document(mydocno,mytext, 0, mytext.length(), "");
+                    Document S = new Document(mydocno,mytext.toString(), 0, mytext.length(), "");
                     documents.put(mydocno, S);
                 }
 
             }
             sizofmydictionary=documents.size();
         }
+        allMatchesofdoc.clear();
     }
 
     private String readFileAsString(String filePath) throws IOException

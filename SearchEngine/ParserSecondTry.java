@@ -4,27 +4,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class Parser
+public class ParserSecondTry
 {
     private static HashMap<String,String> m_StopWords;
-    public Map<String,Term> m_terms;//******
+    public Map<String,Term> m_terms;//**
     private static Map<String,String> m_stem=new HashMap<>();// beforeStem,afterStem
-    //private ArrayList<String> beforeTerms;
     private Map<String,Document>m_documents;
-    /** private final Regex r=new Regex(",$#!&=?*<^>(){}\":;+|\\[\\]");
-     private final HashMap<Character,Character> symbols=new HashMap<Character,Character>(){
-     {put('&','x');put('#','x');put('$','x');put('!','x');put('?','x');put('*','x');put(':','x');put(';','x')
-     ;put('\"','x');put('+','x');put('=','x');put('|','x');put('(','x');put(')','x');
-     put('[','x');put(']','x');put('{','x');put('}','x');put('<','x');put('>','x');put('^','x');put('.','x');put('\'','x')
-     ;}
-     };
-     */
-
-    private boolean doStem=true;
+    private boolean doStem;
     private Stemmer stemmer;
     int maxfrequency;
 
-    Map <String,String> Months=new HashMap<String, String>(){{
+    private static Map <String,String> Months=new HashMap<String, String>(){{
         put("january","01"); put("february","02"); put("march","03");put("april","04");put("may","05");
         put("june","06");put("july","07");put("august","08");put("september","09");put("october","10");
         put("november","11");put("december","12");put("jan", "01");put("feb","02");put("mar","03");
@@ -33,14 +23,13 @@ public class Parser
     String currDoc;
 
 
-    public Parser(Map<String,String> m_StopWords, Map<String,Document>documents,boolean doStemming) {
+    public ParserSecondTry(Map<String,String> m_StopWords,boolean doStemming) {
         if(this.m_StopWords==null)
             this.m_StopWords = new HashMap<>(m_StopWords);//added new need tot check time to run
         this.m_terms = new HashMap<>();
-        m_documents=new HashMap<>(documents);
         doStem=true;
     }
-    public void ParseAll()
+    public void ParseAll(Map<String,Document>documents)
     {
         //int i=0;
         /**for (Map.Entry<String,Document> entry : m_documents.entrySet()) {
@@ -55,11 +44,13 @@ public class Parser
          //  else
          //    break;
          */
+        m_documents=new HashMap<>(documents);
         for (Document duc: m_documents.values())
         {
             currDoc=duc.getId();
             parseDoc(duc);
         }
+        m_documents.clear();
         //}
     }
 
@@ -67,14 +58,17 @@ public class Parser
     {
         String text=doc.getText().replaceAll("<(.*?)>","");
         //doc.getText().replaceAll("-"," ");
-        String []termsDoc=text.split("[\\s\\-]");
+        String []termsDoc=text.split("\\s");
         //System.out.println(currDoc+"i split the text of it");
         int count;
         String curTerm;
+        text=null;
+        doc.setText("");
+        System.gc();
         for(int i=0;i<termsDoc.length;i++)
         {
             curTerm=termsDoc[i];
-            //if(termsDoc[i].length()<1||(termsDoc[i].toUpperCase()).matches("^(?=.*[A-Z])(?=.*[0-9])[A-Z0-9]+$"))
+            //if(termsDoc[i].length()<1||(termsDoc[i].toUpperCase()).matches("^(?=.[A-Z])(?=.[0-9])[A-Z0-9]+$"))
             //   continue;
             count=0;
             //String SSS=termsDoc[i].replaceAll("-","");
@@ -86,7 +80,7 @@ public class Parser
             //&&)
             {
                 if (!m_StopWords.containsKey(curTerm))
-                {//maybe remove *******??????
+                {//maybe remove ***??????
                     /** if(termsDoc[i].indexOf('-')!=-1&&termsDoc[i].length()>1)
                      {
                      termsDoc[i]=handleMakaf(termsDoc[i]);
@@ -94,7 +88,7 @@ public class Parser
                      continue;
                      }
                      */
-                    if(curTerm.charAt(0)=='$')
+                   /** if(curTerm.charAt(0)=='$')
                     {
                         while(curTerm.length()>0&&curTerm.charAt(0)=='$')
                             curTerm=curTerm.substring(1);
@@ -105,7 +99,7 @@ public class Parser
                         addToTerm(curTerm+" dollar");
                         continue;
                     }
-
+*/
                     if(isNumber(curTerm))
                     {
                         curTerm = numbersHandler(curTerm);// numb 25-27,21/05/1991,29-word done
@@ -168,7 +162,7 @@ public class Parser
                     }//not a number
 
                     else if(curTerm.length()>0){
-                        //if((curTerm.toUpperCase()).matches("^(?=.*[A-Z])(?=.*[0-9])[A-Z0-9]+$"))
+                        //if((curTerm.toUpperCase()).matches("^(?=.[A-Z])(?=.[0-9])[A-Z0-9]+$"))
                         //  continue;
                         curTerm=curTerm.replaceAll("[$%\\.// \\\\\\s]","");
                         if (curTerm.length()>0&&Character.isUpperCase(curTerm.charAt(0)))
@@ -223,7 +217,8 @@ public class Parser
                 }
                 // if(str.equals("illumin"))
                 //   System.out.print("ilumin add to term");
-                if (m_terms.containsKey(str)) {
+                if (m_terms.containsKey(str))
+                {
                     //think what have to update
                     m_terms.get(str).setTotalApperance(1);//add 1 to total number of appernces in the entire magar
                     if (m_terms.get(str).docs.containsKey(currDoc))//if i have the doc in the map of docs
@@ -242,11 +237,12 @@ public class Parser
                 } else
                 {// first time term
                     Map<String, Integer> docss = new HashMap<>();
-                    //jkdj
                     docss.put(currDoc, 1);
                     Term newterm = new Term(str, docss);
                     m_terms.put(str, newterm);
-                    m_documents.get(currDoc).max_tf = m_terms.get(str).docs.get(currDoc);
+                    //m_documents.get(currDoc).max_tf = m_terms.get(str).docs.get(currDoc);
+                    m_documents.get(currDoc).setMax_tf( m_terms.get(str).docs.get(currDoc));
+
                     //newterm.docs.put(currDoc, 1);//update the list of docs the term is in
 
                 }
@@ -322,10 +318,11 @@ public class Parser
             int makaf = str.indexOf("\'");
             String part1 = str.substring(0, makaf);
             //System.out.println(part1 + "--6");
-            part1=part1.replaceAll(" ","");
-            addToTerm(part1);
+            part1=part1.trim();
+            if(part1.length()>1)
+                addToTerm(part1);
             str = str.replace("\'", "");
-            str=str.replaceAll(" ","");
+            //str=str.replaceAll(" ","");
         }
         return str;
     }
@@ -367,7 +364,7 @@ public class Parser
         //change number from 83.333333 to 83.33
         //String tt = "3.5555";
         boolean isPercent=false;
-        StringBuilder percent=new StringBuilder();
+        //StringBuilder percent=new StringBuilder();
         if (s.indexOf("th")!=-1)
         {
             //percent= percent.append("th");
@@ -467,7 +464,7 @@ public class Parser
             addToTerm(s2);
             phrase=phrase.append(" "+s2);
             count++;
-            if (s3.length()>0&&Character.isUpperCase(s3.charAt(0))&&!Character.isDigit(s3.charAt(0)))
+          /**  if (s3.length()>0&&Character.isUpperCase(s3.charAt(0))&&!Character.isDigit(s3.charAt(0)))
             {
                 if(s3.contains("\'"))
                     s3=handleApostrophe(s3);
@@ -476,10 +473,12 @@ public class Parser
                 phrase=phrase.append(" "+s3);
                 addToTerm(s3);
                 count++;
-            }
+            }*/
         }
         if(count>1)
             addToTerm(phrase.toString());
+        phrase=null;
+        System.gc();
         return count;
     }
 
@@ -517,6 +516,8 @@ public class Parser
                 sdot.append(str);
                 str = sdot.toString();
             }
+            sdot=null;
+            System.gc();
             //while(str.indexOf("-")==0)
             //  str=str.substring(1);
             //while(str.length()>0&&str.lastIndexOf('-')==str.length()-1)

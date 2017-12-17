@@ -4,13 +4,23 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class ParserSecondTry
+public class Parser
 {
     private static HashMap<String,String> m_StopWords;
-    public Map<String,Term> m_terms;//**
+    public HashMap<String,Term> m_terms;//******
     private static Map<String,String> m_stem=new HashMap<>();// beforeStem,afterStem
+    //private ArrayList<String> beforeTerms;
     private Map<String,Document>m_documents;
-    private boolean doStem;
+    /** private final Regex r=new Regex(",$#!&=?*<^>(){}\":;+|\\[\\]");
+     private final HashMap<Character,Character> symbols=new HashMap<Character,Character>(){
+     {put('&','x');put('#','x');put('$','x');put('!','x');put('?','x');put('*','x');put(':','x');put(';','x')
+     ;put('\"','x');put('+','x');put('=','x');put('|','x');put('(','x');put(')','x');
+     put('[','x');put(']','x');put('{','x');put('}','x');put('<','x');put('>','x');put('^','x');put('.','x');put('\'','x')
+     ;}
+     };
+     */
+
+    private boolean doStem=true;
     private Stemmer stemmer;
     int maxfrequency;
 
@@ -23,7 +33,7 @@ public class ParserSecondTry
     String currDoc;
 
 
-    public ParserSecondTry(Map<String,String> m_StopWords, Map<String,Document>documents,boolean doStemming) {
+    public Parser(Map<String,String> m_StopWords, Map<String,Document>documents,boolean doStemming) {
         if(this.m_StopWords==null)
             this.m_StopWords = new HashMap<>(m_StopWords);//added new need tot check time to run
         this.m_terms = new HashMap<>();
@@ -50,21 +60,28 @@ public class ParserSecondTry
             currDoc=duc.getId();
             parseDoc(duc);
         }
+        m_documents.clear();
         //}
     }
 
     public void parseDoc(Document doc)
     {
         String text=doc.getText().replaceAll("<(.*?)>","");
+        int is=0;
+        System.out.println(is+"parse");
+        is++;
         //doc.getText().replaceAll("-"," ");
         String []termsDoc=text.split("[\\s\\-]");
         //System.out.println(currDoc+"i split the text of it");
         int count;
         String curTerm;
+        text=null;
+        doc.setText(null);
+        //System.gc();
         for(int i=0;i<termsDoc.length;i++)
         {
             curTerm=termsDoc[i];
-            //if(termsDoc[i].length()<1||(termsDoc[i].toUpperCase()).matches("^(?=.[A-Z])(?=.[0-9])[A-Z0-9]+$"))
+            //if(termsDoc[i].length()<1||(termsDoc[i].toUpperCase()).matches("^(?=.*[A-Z])(?=.*[0-9])[A-Z0-9]+$"))
             //   continue;
             count=0;
             //String SSS=termsDoc[i].replaceAll("-","");
@@ -76,7 +93,7 @@ public class ParserSecondTry
             //&&)
             {
                 if (!m_StopWords.containsKey(curTerm))
-                {//maybe remove ***??????
+                {//maybe remove *******??????
                     /** if(termsDoc[i].indexOf('-')!=-1&&termsDoc[i].length()>1)
                      {
                      termsDoc[i]=handleMakaf(termsDoc[i]);
@@ -84,7 +101,7 @@ public class ParserSecondTry
                      continue;
                      }
                      */
-                    if(curTerm.charAt(0)=='$')
+                    /**if(curTerm.charAt(0)=='$')
                     {
                         while(curTerm.length()>0&&curTerm.charAt(0)=='$')
                             curTerm=curTerm.substring(1);
@@ -95,7 +112,7 @@ public class ParserSecondTry
                         addToTerm(curTerm+" dollar");
                         continue;
                     }
-
+*/
                     if(isNumber(curTerm))
                     {
                         curTerm = numbersHandler(curTerm);// numb 25-27,21/05/1991,29-word done
@@ -158,7 +175,7 @@ public class ParserSecondTry
                     }//not a number
 
                     else if(curTerm.length()>0){
-                        //if((curTerm.toUpperCase()).matches("^(?=.[A-Z])(?=.[0-9])[A-Z0-9]+$"))
+                        //if((curTerm.toUpperCase()).matches("^(?=.*[A-Z])(?=.*[0-9])[A-Z0-9]+$"))
                         //  continue;
                         curTerm=curTerm.replaceAll("[$%\\.// \\\\\\s]","");
                         if (curTerm.length()>0&&Character.isUpperCase(curTerm.charAt(0)))
@@ -232,12 +249,11 @@ public class ParserSecondTry
                 } else
                 {// first time term
                     Map<String, Integer> docss = new HashMap<>();
+                    //jkdj
                     docss.put(currDoc, 1);
                     Term newterm = new Term(str, docss);
                     m_terms.put(str, newterm);
-                    //m_documents.get(currDoc).max_tf = m_terms.get(str).docs.get(currDoc);
-                    m_documents.get(currDoc).setMax_tf( m_terms.get(str).docs.get(currDoc));
-
+                    m_documents.get(currDoc).max_tf = m_terms.get(str).docs.get(currDoc);
                     //newterm.docs.put(currDoc, 1);//update the list of docs the term is in
 
                 }
@@ -313,7 +329,7 @@ public class ParserSecondTry
             int makaf = str.indexOf("\'");
             String part1 = str.substring(0, makaf);
             //System.out.println(part1 + "--6");
-            part1=part1.trim();
+            part1=part1.replaceAll(" ","");
             addToTerm(part1);
             str = str.replace("\'", "");
             str=str.replaceAll(" ","");
@@ -458,7 +474,7 @@ public class ParserSecondTry
             addToTerm(s2);
             phrase=phrase.append(" "+s2);
             count++;
-            if (s3.length()>0&&Character.isUpperCase(s3.charAt(0))&&!Character.isDigit(s3.charAt(0)))
+           /** if (s3.length()>0&&Character.isUpperCase(s3.charAt(0))&&!Character.isDigit(s3.charAt(0)))
             {
                 if(s3.contains("\'"))
                     s3=handleApostrophe(s3);
@@ -468,6 +484,7 @@ public class ParserSecondTry
                 addToTerm(s3);
                 count++;
             }
+            */
         }
         if(count>1)
             addToTerm(phrase.toString());

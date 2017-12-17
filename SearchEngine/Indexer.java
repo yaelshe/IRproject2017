@@ -1,9 +1,10 @@
-package SearchEngine;
-import java.io.*;
-import java.util.*;
-import java.lang.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
+        package SearchEngine;
+        import java.io.*;
+        import java.util.*;
+        import java.lang.*;
+        import java.util.regex.Matcher;
+        import java.util.regex.Pattern;
 
 public class Indexer
 {
@@ -17,45 +18,85 @@ public class Indexer
 
 
     public Indexer(Map<String,Term> parsedWords,int i,String mypath) throws IOException {//change the i to path ....
-        this.mypath="D:\\11\\";
-        mp_terms=new TreeMap<>(parsedWords);
+        this.mypath="C:\\Users\\sheinbey\\Downloads\\11\\";
+        //C:\Users\sheinbey\Downloads\corpus
+        mp_terms=parsedWords;
         mytxt = i;
         newLine = System.getProperty("line.separator");
         www();
     }
     public void www() throws IOException
     {
-        //NEED TO CHANGE BACK TO GET MYPAR !!!!!!!!!!!!!!!!!!!!!!!
+        //NEED TO CHANGE BACK TO GET MYPART !!!!!!!!!!!!!!!!!!!!!!!
         //File logFile=new File("C:\\Users\\yaels\\Desktop\\11\\ibr.txt");
         File logFile=new File(mypath+mytxt+".txt");
         BufferedWriter writer = new BufferedWriter(new FileWriter(logFile));
         //System.out.println(logFile.getCanonicalPath());
         //int i = 1;
         System.out.println(logFile.getAbsolutePath());
-        for (String termo: mp_terms.keySet()){
-            //we go over the words from parser
-            //add the words to dictionary
-            //for each term addd the number of dcos and ttotal appernces
-            if(m_Dictionary.containsKey(termo))
+
+        /** List<Map.Entry<String,Term>> a  = new ArrayList<>(mp_terms.entrySet());
+         Collections.sort(a, new Comparator<Map.Entry<String, Term>>() {
+           public int compare(Map.Entry<String, Term> o1, Map.Entry<String, Term> o2) {
+              return (o1.getKey()).compareTo( o2.getKey());}});*/
+        List <String>sortedTerms=new ArrayList(mp_terms.keySet());
+        Collections.sort(sortedTerms);
+        for( String s: sortedTerms)
+        {
+            if(mp_terms.get(s).getTotalApperance()<2)
+                continue;
+            if(m_Dictionary.containsKey(s))
             {
-                m_Dictionary.get(termo).setApperances(mp_terms.get(termo).getTotalApperance());
-                m_Dictionary.get(termo).setNumOfDocs(mp_terms.get(termo).getNumOfDocIDF());
+                //TermDic t = m_Dictionary.get(s);
+                m_Dictionary.get(s).setApperances((mp_terms.get(s).getTotalApperance()));
+                m_Dictionary.get(s).setNumOfDocs(mp_terms.get(s).getNumOfDocIDF());
+                // t.setApperances((mp_terms.get(s)).getValue().getTotalApperance());
+                //m_Dictionary.get(termo.getKey()).setNumOfDocs(termo.getValue().getNumOfDocIDF());
             }
             else
-                m_Dictionary.put(termo, new TermDic(termo,mp_terms.get(termo).getTotalApperance(),
-                        0, mp_terms.get(termo).getNumOfDocIDF()));
-            String value = mp_terms.get(termo).toString();//get the string that describe the term
-            WriteToTxt(value,writer);
+                m_Dictionary.put(s, new TermDic(s,mp_terms.get(s).getTotalApperance(),
+                        0,mp_terms.get(s).getNumOfDocIDF()));
+            String value =mp_terms.get(s).toString();//get the string that describe the term
+            try {
+                writer.write (value+newLine);
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
         }
 
+
+
+        ///////////////////////////////////////////
+      /**  for (Map.Entry<String,Term> termo: a){
+         //we go over the words from parser
+         //add the words to dictionary
+         //for each term addd the number of dcos and ttotal appernces
+         if(m_Dictionary.containsKey(termo.getKey()))
+         {
+         TermDic t = m_Dictionary.get(termo.getKey());
+         t.setApperances(termo.getValue().getTotalApperance());
+         m_Dictionary.get(termo.getKey()).setNumOfDocs(termo.getValue().getNumOfDocIDF());
+         }
+         else
+         m_Dictionary.put(termo.getKey(), new TermDic(termo.getKey(),termo.getValue().getTotalApperance(),
+         0,termo.getValue().getNumOfDocIDF()));
+         String value =termo.getValue().toString();//get the string that describe the term
+         WriteToTxt(value,writer);
+         }
+         //////////////////////////////////
+       */
+         //a.clear();
+        sortedTerms.clear();
+        mp_terms.clear();
+        System.gc();
         writer.close();
     }
     public void WriteToTxt(String s, BufferedWriter writer){
         // Yael removed because unnecessary alreday include in buffer writer - File logFile
-        String string =s;
+        //String string =s;
         //System.out.println(s);
         try {
-            writer.write (string+newLine);
+            writer.write (s+newLine);
         } catch(Exception e) {
             e.printStackTrace();
         }
@@ -67,22 +108,22 @@ public class Indexer
         directory.mkdirs();
         String path3=directory.getCanonicalPath();
         /**for (int j=0;j<=181;j=j+2){
-            String s =mergTwoFile(mypath+j+".txt",mypath+(j+1)+".txt",path3+"\\"+(j/2));
-            System.out.println(j);
-        }
-        String thepath = directory.getAbsolutePath();
-        directory = new File(mypath+"\\2");
-        directory.mkdirs();
-        path3=mypath+"2";
-        for (int j=0;j<90;j=j+2){
-            String s =mergTwoFile(thepath+"\\"+j+".txt",thepath+"\\"+(j+1)+".txt",path3+"\\"+(j/2));
-            System.out.println(j);
-        }
-        String t=mergTwoFile(thepath+"\\"+90+".txt",logFile.getAbsolutePath(),path3+"\\45");
-        thepath = directory.getAbsolutePath();
-        directory=new File(mypath+"\\3");
-        directory.mkdirs();
-        path3=mypath+"3";*/
+         String s =mergTwoFile(mypath+j+".txt",mypath+(j+1)+".txt",path3+"\\"+(j/2));
+         System.out.println(j);
+         }
+         String thepath = directory.getAbsolutePath();
+         directory = new File(mypath+"\\2");
+         directory.mkdirs();
+         path3=mypath+"2";
+         for (int j=0;j<90;j=j+2){
+         String s =mergTwoFile(thepath+"\\"+j+".txt",thepath+"\\"+(j+1)+".txt",path3+"\\"+(j/2));
+         System.out.println(j);
+         }
+         String t=mergTwoFile(thepath+"\\"+90+".txt",logFile.getAbsolutePath(),path3+"\\45");
+         thepath = directory.getAbsolutePath();
+         directory=new File(mypath+"\\3");
+         directory.mkdirs();
+         path3=mypath+"3";*/
         for (int j=0;j<=45;j=j+2){
             String s =mergTwoFile(mypath+j+".txt",mypath+(j+1)+".txt",path3+"\\"+(j/2));
             System.out.println(j);

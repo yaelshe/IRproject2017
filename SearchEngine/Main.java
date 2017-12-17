@@ -17,178 +17,38 @@ public class Main {
             //(,$#!&=?*<>^(){}\":;+|\\[\\]]);
 
     public static void main(String[] args) throws IOException {
-        //System.out.println("Hello World!");
-        /** String s1 = "I -- Want.\" H12: Tay-12?  C.C. to\"  my\' dog!";
-         System.out.println(s1);
-         TreeMap<String,Integer> docs= new TreeMap<>();
-         docs.put("yael",34);
-         docs.put("t",45);
-         docs.put("yagl",67);
-         docs.put("ya6l",675);
-         String str=get_docs(docs);
-         System.out.println(str);*/
-        /**
-        String str="12%^,. ) \"   ";
-        System.out.println(str);
-        Regex r=new Regex("");
-        //str=str.replaceAll(String.valueOf(r.matcher(new char[]{'!','?','#','$',',','&','=','*','+','<','>','^','(',')','{','}',
-          //      '[',']','\"',';',':','|',})),"");
-        str=str.replaceAll("[,$#!&?*()<>^{}\\\":;+|\\[\\]\\s+]","");
 
-        //str = str.substring(1, str.length());
-        // char last = str.charAt(str.length() - 1);
-         System.out.println(str+"end");
-         StringBuilder sdot=new StringBuilder("1");
-         sdot.append("2");
-         System.out.println(sdot.toString());
-         */
-         //String tt = "-a";
-         //String id ="123";
-        //Map <String,Integer> map= new HashMap<>();
-        //map.put("doc1",1);
-        //Term term= new Term("year",map);
-        //System.out.println(term);
-       /** String line ="year #1 &doc1-1 [1]";
-        String line2="year #2 &doc2-2 [3]";
-        String NUM1=line.substring(line.indexOf("#") + 1, line.indexOf("&") - 1);
-        NUM1=NUM1.replaceAll(" ","");
-        //
-        String NUM11=line.substring(line.indexOf("[") + 1, line.indexOf("]") );
-        NUM11=NUM11.replaceAll(" ","");
-        //
-        String NUM2=line2.substring(line2.indexOf("#") + 1, line2.indexOf("&") - 1);
-        NUM2=NUM2.replaceAll(" ","");
-        //
-        String NUM22=line2.substring(line2.indexOf("[") + 1, line2.indexOf("]") );
-        NUM22=NUM22.replaceAll(" ","");
-        //
-        int number = Integer.parseInt(NUM1) + Integer.parseInt(NUM2);
-        System.out.println(NUM11);
-        System.out.println(NUM22);
-        int number2 = Integer.parseInt(NUM11) + Integer.parseInt(NUM22);
-        line = "year" + " " + "#" + " " + number + " " +"["+number2+"]";
-        System.out.println(line);
-        */
-         /**Document dd = new Document(id,tt,0,0,"dk");
-         ReadFile r = new ReadFile("C:\\");
-         r.breakToFiles();
-         Parse P = new Parse(r.stopword,r.documents);
-         P.parseDoc(dd);
-         */
         long startTime = System.currentTimeMillis();
-        //ReadFile rf=new ReadFile("C:\\Users\\linoy\\Desktop\\searching project\\corpus","");
 
-        /**ReadFile r = new ReadFile("C:\\");
-
-         int i = 0;
-         while (r.nextFile<r.filesPaths.size())
-         {
-         System.out.println(i);
-         r.breakToFiles();
-         Parser P = new Parser(r.stopword ,r.documents,true);
-         P.ParseAll();
-         i++;
-         }
-         */
-        /** Indexer N;
-         Map<String,Term>mp_terms;
-         mp_terms=new TreeMap<>();
-
-         N= new Indexer(mp_terms,0,"C:\\Users\\ibrahim\\Desktop\\11\\");
-         N.mergTwoFileLast("C:\\Users\\yaels\\Desktop\\11\\7\\0.txt","C:\\Users\\yaels\\Desktop\\11\\7\\1.txt","C:\\Users\\yaels\\Desktop\\11\\8\\0");
-         //N.mergAllFile();
-*/
-       /** String line= "fdmdmf 78 ( hh) [ 123] grg";
-        int first=line.indexOf("[");
-        int last=line.indexOf("]");
-        System.out.println(line);
-        int appercances=0;
-        appercances = Integer.parseInt((line.substring(first+1, last)).trim());
-        System.out.println(appercances+"number between brackets");
-        */
-       String s="$$$$$$$$$$$$";
-        if(s.charAt(0)=='$')
+        ReadFile r= new ReadFile("C:\\Users\\sheinbey\\Downloads\\");
+        Indexer indexer=null;
+        //C:\Users\sheinbey\Downloads\corpus
+        int i = 0;
+        while (r.nextFile<r.filesPaths.size())
         {
-            while(s.length()>0&&s.charAt(0)=='$')
-                s=s.substring(1);
-            if(s.equals("")||s.length()==0){
-                System.out.println("dollar");;
-               // continue;
+            System.out.println(i);
+            Runtime instance=Runtime.getRuntime();
+            System.out.println((instance.totalMemory())/(1024*1024)+"fd");
+            r.breakToFiles();
+            System.out.println((instance.totalMemory())/(1024*1024)+"fdd");
+            Parser P= new Parser(r.stopword,r.documents,true);
+            P.ParseAll();
+
+            //indexer=new Indexer(P.m_terms,0,pathToPosting);
+            try {
+                 indexer =new Indexer(P.m_terms,i,"");//changed to i
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.out.println("here dosnt");
             }
-            else
-            System.out.println(s+" dollar");
-            //continue;
+            i++;
+            //indexer=new Indexer();//add the m_terms and the path for posting files
         }
-        System.out.println("sweeet"+s+"nothing");
-        /**String text= " fdnjdfndj fdnjfdnjd fdf-fedd cddf-fdd - - -- ds -f- -------------3 4----------------- ";
-
-        String []termsDoc=text.split("[\\s+]");
-        for(int j=0;j<termsDoc.length;j++) {
-            System.out.println(termsDoc[j]+"orignial");
-            termsDoc[j]=handleMakaf(termsDoc[j]);
-                System.out.println(termsDoc[j] + " after" + termsDoc[j].length());
+        try {
+            indexer.mergAllFile();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-*/
-        //Map<String,Integer> docs=new HashMap<>();
-        //docs.put("doc3",3);
-        //docs.put("doc412234",5);
-        //docs.put("doc5",4);
-        //System.out.println(docs.keySet());
-        //List sortedKeys=new ArrayList(docs.keySet());
-        //Collections.sort(sortedKeys);
-        //System.out.println(sortedKeys);
-
-        /**StringBuilder sb=new StringBuilder("---");
-         System.out.println(sb.toString());
-         while(sb.indexOf("--")!=-1)
-         sb.deleteCharAt((sb.indexOf("--")));
-         */
-       /** String s="% 12/1.1/av\\c";
-        System.out.println((s));
-        s=removeExtra(s);
-        System.out.println((s));
-        s=s.replaceAll("[%\\.// \\\\\\s]","");
-        System.out.println((s));
-        */
-       // s=handleMakaf(s);
-        //s=s.replaceAll(" ","");
-       // while(s.indexOf("--")!=-1)
-          //  s=s.replaceAll("--","-");
-        //StringBuilder sb=new StringBuilder("PART1");
-        //sb.append("apr2");
-        //System.out.println(sb.toString());
-        //System.out.println(Character.isAlphabetic(s.charAt(0)));
-       // System.out.println(s);
-        //s=removeExtra(s);
-        //System.out.println(s);
-        //System.out.println(isNumber(s));
-        // System.out.println(s+"before");
-        //s=numbersHandler(s);
-       // String str="<%-%---4556%";
-        //System.out.println(str.lastIndexOf('-')+"1");
-        //System.out.println((str.length()-1)+"2");
-        //char first=str.charAt(0);
-        //if (first == '<' || first == '\'' || first == '^' || first == '.'||first == '-'||first=='%')
-        //    str = str.substring(1, str.length());
-        //System.out.println(str);
-        // System.out.println(str+"after");
-        //String str="A---12--12A";
-        //if(isNumber(str))
-          //  System.out.println("is number");
-        //else
-
-       // if(str.matches("^(?=.*[A-Z])(?=.*[0-9])[A-Z0-9]+$"))
-        //    System.out.println("true");
-        //else
-         //   System.out.println("false");
-        //str = str.replaceAll("\\s", "");
-        //System.out.println(str);
-        //str=str.replaceAll("[<>\\-%^\\.\\/\\\\]","");
-        //String str=" h";
-        //if (str.trim().length() > 0)
-        //    System.out.println(str);
-        //else
-        //    System.out.println("dosent woek");
         long endTime   = System.currentTimeMillis();
         long totalTime = endTime - startTime;
         System.out.println(totalTime/1000/60);

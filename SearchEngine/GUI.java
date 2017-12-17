@@ -31,11 +31,16 @@ public class GUI extends Application {
     TextField loadInput;
     TextField saveInput;
     TextField corpusInput;
+    String pathToSave="";
+    String pathToLoad="";
     String s="";
-    String pathToPosting="C:\\Users\\yaels\\Desktop\\11";
+    String pathToPosting="C:\\Users\\sheinbey\\Downloads\\11";
+    //C:\Users\sheinbey\Downloads\11
+    //Downloads
     String pathToCorpus="";
     ReadFile r;
-    Parser P;
+    //ParserSecondTry P;
+    Parse P;
     Indexer indexer;
     long totalTime;
     boolean finish=false;
@@ -227,9 +232,7 @@ public class GUI extends Application {
 
     public void StartButton (String s1, String s2, boolean box1) throws IOException
     {
-        Platform .runLater(new Runnable() {
-            @Override
-            public void run() {
+
                 long startTime = System.currentTimeMillis();
                 if(s1.length()>0&&s2.length()>0)
                 {//the fields are filled
@@ -253,20 +256,26 @@ public class GUI extends Application {
                     AlertBox.display("Missing Input", "Error: no paths had been written!");
                 }
                 //r = new ReadFile(pathToCorpus);
-                r= new ReadFile("C:\\");
+                r= new ReadFile("C:\\Users\\sheinbey\\Downloads\\");
+                P= new Parse(r.stopword,doStemming);
+                //C:\Users\sheinbey\Downloads\corpus
                 int i = 0;
                 while (r.nextFile<r.filesPaths.size())
                 {
                     System.out.println(i);
-                    Runtime instance=Runtime.getRuntime();
-                    System.out.println((instance.totalMemory())/(1024*1024)+"fd");
+                   // Runtime instance=Runtime.getRuntime();
+                    //System.out.println((instance.totalMemory())/(1024*1024)+"fd");
                     r.breakToFiles();
-                    System.out.println((instance.totalMemory())/(1024*1024)+"fdd");
-                    P = new Parser(r.stopword,r.documents,doStemming);
-                    P.ParseAll();
+                  //  System.out.println((instance.totalMemory())/(1024*1024)+"fdd");
+                   // P = new Parse(r.stopword,r.documents,doStemming);
+                    P.ParseAll(r.documents);
+                    System.out.println("dont with parse for now");
+                  //  r.documents.clear();
+                    //r.allMatchesofdoc.clear();
                     //indexer=new Indexer(P.m_terms,0,pathToPosting);
                     try {
                         indexer =new Indexer(P.m_terms,i,pathToPosting);//changed to i
+                        P.m_terms.clear();
                     } catch (IOException e) {
                         e.printStackTrace();
                         System.out.println("here dosnt");
@@ -285,8 +294,9 @@ public class GUI extends Application {
                 totalTime = endTime - startTime;
                 System.out.println(totalTime/1000/60);
                 finish=true;
-            }
-        });
+
+
+
     }
     public ObservableList<String> getDictionaryTermGui()
     {//get the items for the dictionary
@@ -351,13 +361,14 @@ public class GUI extends Application {
         cachewindow.show();
     }
     public void loadFiles() throws IOException, ClassNotFoundException {
-        FileInputStream fi = new FileInputStream(new File(loadInput+"myDictionary.ser"));
-        FileInputStream fi2 = new FileInputStream(new File(loadInput+"myCache.ser"));
+        FileInputStream fi = new FileInputStream(new File(pathToLoad+"\\myDictionary.ser"));
+        FileInputStream fi2 = new FileInputStream(new File(pathToLoad+"\\myCache.ser"));
         ObjectInputStream oi = new ObjectInputStream(fi);
         ObjectInputStream zi = new ObjectInputStream(fi2);
         // Read objects
         indexer.m_Dictionary = (Map<String,TermDic>) oi.readObject();
         indexer.m_Cache=(Map<String,TermCache>) zi.readObject();
+
         /**List<File> selectedFiles=fc.showOpenMultipleDialog(null);
          if(selectedFiles!=null)
          {//https://www.youtube.com/watch?v=hNz8Xf4tMI4
@@ -371,15 +382,18 @@ public class GUI extends Application {
     public void saveFiles() throws IOException
     {
 
-        FileOutputStream fos = new FileOutputStream(saveInput+"\\myDictionary.ser");
+        FileOutputStream fos = new FileOutputStream(pathToSave+"\\myDictionary.ser");
         ObjectOutputStream oos = new ObjectOutputStream(fos);
         oos.writeObject(indexer.m_Dictionary);
         oos.close();
 
-        FileOutputStream fos1 = new FileOutputStream(saveInput+"\\myCache.ser");
+        FileOutputStream fos1 = new FileOutputStream(pathToSave+"\\myCache.ser");
         ObjectOutputStream oos1 = new ObjectOutputStream(fos1);
         oos1.writeObject(indexer.m_Cache);
         oos1.close();
+
+        dictionary.setItems(getDictionaryTermGui());
+        cache.setItems(getCacheTermGui());
 
         //FileChooser fc=new FileChooser();
         //fc.setInitialDirectory((new File("C:\\")));
@@ -419,6 +433,7 @@ public class GUI extends Application {
         File selectedFile=dc.showDialog(null);
         s=selectedFile.getAbsolutePath();
         saveInput.setText(s);
+        pathToSave=s;
     }
 
     public void browserLoad()
@@ -428,6 +443,7 @@ public class GUI extends Application {
         File selectedFile=dc.showDialog(null);
         s=selectedFile.getAbsolutePath();
         loadInput.setText(s);
+        pathToLoad=s;
     }
 
 
