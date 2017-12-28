@@ -1,6 +1,8 @@
 package SearchEngine;
 
-public class TermDic implements Comparable  {
+import java.io.Serializable;
+
+public class TermDic implements Comparable,Serializable {
     String name;
     int apperances;
     int pointer;//row number in posting file

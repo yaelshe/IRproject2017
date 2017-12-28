@@ -1,6 +1,8 @@
 package SearchEngine;
 
-public class TermCache {
+import java.io.Serializable;
+
+public class TermCache implements Serializable {
     String term;
     String favDocs;
     int pointer;

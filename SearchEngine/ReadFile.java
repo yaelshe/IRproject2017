@@ -19,13 +19,14 @@ public class ReadFile
     List<String> filesPaths;
     List<String> allMatchesofdoc;
     int sizofmydictionary;
+     static int counDocs=0;
     int nextFile;
 
     public ReadFile(String path)
     {
         //create the HashMap for the stopwords from the array;
 
-        String pathofstopword=path+"stop_words.txt";
+        String pathofstopword=path+"\\stop_words.txt";
         String []stops=(readStopword(pathofstopword));
         stopword = new HashMap<>();// why save stop?
         for(int i=0;i<stops.length;i++)
@@ -36,7 +37,7 @@ public class ReadFile
         this.filesPaths = new ArrayList<String>();
         this.sizofmydictionary=0;
         this.nextFile=0;
-        try (Stream<Path> paths = Files.walk(Paths.get(path+"corpus"))) {
+        try (Stream<Path> paths = Files.walk(Paths.get(path+"\\corpus"))) {
             paths.filter(Files::isRegularFile)
                     .forEach(path1 -> filesPaths.add(path1.toString()));
 
@@ -87,8 +88,8 @@ public class ReadFile
         while (m.find()) {
             allMatchesofdoc.add(m.group(1));
         }
-
-        for(int i=0;i<allMatchesofdoc.size();i++)
+        int i=0;
+        for( i=0;i<allMatchesofdoc.size();i++)
         {
             // mytext=new
             if (allMatchesofdoc.get(i).contains("<TEXT>")){
@@ -109,6 +110,8 @@ public class ReadFile
             }
             sizofmydictionary=documents.size();
         }
+        counDocs=counDocs+i;
+       // System.out.println(counDocs);
         allMatchesofdoc.clear();
     }
 

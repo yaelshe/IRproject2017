@@ -1,11 +1,9 @@
-
-        package SearchEngine;
-        import java.io.*;
+package SearchEngine;
+import java.io.*;
         import java.util.*;
         import java.lang.*;
         import java.util.regex.Matcher;
         import java.util.regex.Pattern;
-
 public class Indexer
 {
     private Map<String,Term>mp_terms;
@@ -15,17 +13,19 @@ public class Indexer
     private int mytxt;
     private String mypath;
     private String newLine;
-
+    String pathToDictioanary;
 
     public Indexer(Map<String,Term> parsedWords,int i,String mypath) throws IOException {//change the i to path ....
-        this.mypath="C:\\Users\\sheinbey\\Downloads\\11\\";
+        //this.mypath="C:\\Users\\sheinbey\\Downloads\\11\\";
+        this.mypath=mypath+"\\";
+        pathToDictioanary=mypath+"\\";
         //C:\Users\sheinbey\Downloads\corpus
         mp_terms=parsedWords;
         mytxt = i;
         newLine = System.getProperty("line.separator");
-        www();
+        tempPosting();
     }
-    public void www() throws IOException
+    public void tempPosting() throws IOException
     {
         //NEED TO CHANGE BACK TO GET MYPART !!!!!!!!!!!!!!!!!!!!!!!
         //File logFile=new File("C:\\Users\\yaels\\Desktop\\11\\ibr.txt");
@@ -104,7 +104,7 @@ public class Indexer
     public  void  mergAllFile() throws IOException {
         File logFile=new File(mypath+"00.txt");
         BufferedWriter writer = new BufferedWriter(new FileWriter(logFile));
-        File directory = new File(mypath+"\\1");
+        File directory = new File(mypath+"1");
         directory.mkdirs();
         String path3=directory.getCanonicalPath();
         /**for (int j=0;j<=181;j=j+2){
@@ -174,6 +174,7 @@ public class Indexer
     public String mergTwoFileLast(String path1,String path2,String path3) throws IOException{
         //the merge for the last tow temporary posting files
         //create the dictionary and cache
+
         List <TermDic>sortedTerms=new ArrayList(m_Dictionary.values());
         Collections.sort(sortedTerms);
         int sizezush=sortedTerms.size();
@@ -184,6 +185,8 @@ public class Indexer
                     new TermCache(sortedTerms.get(sortedTerms.size()-1-m).getName(),
                             "",0));
         }
+        File logFileDic=new File(pathToDictioanary+"dictionary"+".txt");
+        BufferedWriter writerDic = new BufferedWriter(new FileWriter(logFileDic));
         int counterLine=0;
         File finalFile=new File(path3+".txt");
         BufferedWriter writer = new BufferedWriter(new FileWriter(finalFile));
@@ -261,6 +264,10 @@ public class Indexer
                 writer.write(line + System.getProperty("line.separator"));
                 //int appercances=getAapperances(line);
                 m_Dictionary.get(s1).setPointer(counterLine);
+                writerDic.write("name:"+m_Dictionary.get(s1).getName()+
+                        "_numberofdocs:"+m_Dictionary.get(s1).getNumOfDocs()+
+                        "_total,apperances:"+m_Dictionary.get(s1).getPointer()+
+                        "_pointer:"+m_Dictionary.get(s1).getPointer());
                 if(m_Cache.containsKey(s1))
                 {
                     m_Cache.get(s1).setPointer(counterLine);
@@ -277,6 +284,10 @@ public class Indexer
                     writer.write(line + System.getProperty("line.separator"));
                     //int appercances=getAapperances(line);
                     m_Dictionary.get(s1).setPointer(counterLine);
+                    writerDic.write("name:"+m_Dictionary.get(s1).getName()+
+                            "_numberofdocs:"+m_Dictionary.get(s1).getNumOfDocs()+
+                            "_total,apperances:"+m_Dictionary.get(s1).getPointer()+
+                            "_pointer:"+m_Dictionary.get(s1).getPointer());
                     if(m_Cache.containsKey(s1))
                     {
                         m_Cache.get(s1).setPointer(counterLine);
@@ -289,9 +300,13 @@ public class Indexer
                 } else {
                     //System.out.println(s2);
                     writer.write(line2 + System.getProperty("line.separator"));
-                    if (!m_Dictionary.containsKey(s2))
-                        System.out.println(s2);
+                    //if (!m_Dictionary.containsKey(s2))
+                       // System.out.println(s2);
                     m_Dictionary.get(s2).setPointer(counterLine);
+                    writerDic.write("name:"+m_Dictionary.get(s2).getName()+
+                            "_numberofdocs:"+m_Dictionary.get(s2).getNumOfDocs()+
+                            "_total,apperances:"+m_Dictionary.get(s2).getPointer()+
+                            "_pointer:"+m_Dictionary.get(s2).getPointer());
                     if(m_Cache.containsKey(s2))
                     {
                         m_Cache.get(s2).setPointer(counterLine);
@@ -318,13 +333,18 @@ public class Indexer
                 }
                 if (!write1)
                 {
-                    System.out.println(line+"this line sucks 280 indexer");
+                   // System.out.println(line+"this line sucks 280 indexer");
                     writer.write(line + System.getProperty("line.separator"));
                     //int appercances=getAapperances(line);
                     if(line!=null&&!line.equals("null")) {
                         String sx = line.substring(0, line.indexOf("#") - 1);
-                        if (m_Dictionary.containsKey(sx)) ;
-                        m_Dictionary.get(sx).setPointer(counterLine);
+                        if (m_Dictionary.containsKey(sx)) {
+                            m_Dictionary.get(sx).setPointer(counterLine);
+                            writerDic.write("name:"+m_Dictionary.get(sx).getName()+
+                                    "_numberofdocs:"+m_Dictionary.get(sx).getNumOfDocs()+
+                                    "_total,apperances:"+m_Dictionary.get(sx).getPointer()+
+                                    "_pointer:"+m_Dictionary.get(sx).getPointer());
+                        }
                         if (m_Cache.containsKey(sx)) {
                             m_Cache.get(sx).setPointer(counterLine);
                             m_Cache.get(sx).setFavDocs(findTheDocs(line));// need to change in all times
@@ -351,8 +371,13 @@ public class Indexer
                     if(line2!=null&&!line2.equals("null")) {
                         //int appercances=getAapperances(line2);
                         String s = line2.substring(0, line2.indexOf("#") - 1);
-                        if (m_Dictionary.containsKey(s)) ;
-                        m_Dictionary.get(s).setPointer(counterLine);
+                        if (m_Dictionary.containsKey(s)) {
+                            m_Dictionary.get(s).setPointer(counterLine);
+                            writerDic.write("name:"+m_Dictionary.get(s).getName()+
+                                    "_numberofdocs:"+m_Dictionary.get(s).getNumOfDocs()+
+                                    "_total,apperances:"+m_Dictionary.get(s).getPointer()+
+                                    "_pointer:"+m_Dictionary.get(s).getPointer());
+                        }
                         if (m_Cache.containsKey(s)) {
                             m_Cache.get(s).setPointer(counterLine);
                             m_Cache.get(s).setFavDocs(findTheDocs(line2));// need to change in all times
@@ -364,8 +389,9 @@ public class Indexer
                 read2=false;
             }
         }
+        writerDic.close();
         writer.close();
-        System.out.println("closed");
+        //System.out.println("closed");
 
         return "";
     }

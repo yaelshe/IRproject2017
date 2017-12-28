@@ -12,19 +12,10 @@ public class Parse
     private static Map<String,String> m_stem=new HashMap<>();// beforeStem,afterStem
     //private ArrayList<String> beforeTerms;
     private Map<String,Document>m_documents;
-    /* private final Regex r=new Regex(",$#!&=?<^>(){}\":;+|\\[\\]");
-     private final HashMap<Character,Character> symbols=new HashMap<Character,Character>(){
-     {put('&','x');put('#','x');put('$','x');put('!','x');put('?','x');put('*','x');put(':','x');put(';','x')
-     ;put('\"','x');put('+','x');put('=','x');put('|','x');put('(','x');put(')','x');
-     put('[','x');put(']','x');put('{','x');put('}','x');put('<','x');put('>','x');put('^','x');put('.','x');put('\'','x')
-     ;}
-     };
-     */
-
     private boolean doStem=true;
     private Stemmer stemmer;
     int maxfrequency;
-    Pattern remove, removeapo,removeAll,removeTags,removeAll2;
+    Pattern remove, removeapo,removeAll,removeTags;
 
     Map <String,String> Months=new HashMap<String, String>(){{
         put("january","01"); put("february","02"); put("march","03");put("april","04");put("may","05");
@@ -39,30 +30,15 @@ public class Parse
         if(this.m_StopWords==null)
             this.m_StopWords = new HashMap<>(m_StopWords);//added new need tot check time to run
         this.m_terms = new HashMap<>();
-
-        doStem=true;
+        doStem=doStemming;
          remove= Pattern.compile("[$%\\.// \\\\\\s]") ;
          removeapo= Pattern.compile("[\\']");
         // removeAll=Pattern.compile("[,#!&?*()<>^{}\\\":;+|\\[\\]\\s\\\\]");
-         removeAll=Pattern.compile("[^\\w && [^.]]+");
+         removeAll=Pattern.compile("[^\\w && [^.%]]+");// added the percent back
          removeTags=Pattern.compile("<(.*?)>");
-         //removeAll2=Pattern.compile("[^\\w && [^.]]+");
     }
     public void ParseAll(Map<String,Document>documents)
     {
-        //int i=0;
-        /**for (Map.Entry<String,Document> entry : m_documents.entrySet()) {
-         //  if(i<1){
-         Document value = entry.getValue();
-         currDoc = entry.getKey();
-         //System.out.println(currDoc+"curr doc in ParseAll");
-         parseDoc(value);
-         //    i++;
-         // do stuff
-         //  }
-         //  else
-         //    break;
-         */
         m_documents=new HashMap<>(documents);
         for (Document duc: m_documents.values())
         {
@@ -71,7 +47,7 @@ public class Parse
         }
         m_documents.clear();
         System.gc();
-        //}
+
     }
 
     public void parseDoc(Document doc)
@@ -86,27 +62,13 @@ public class Parse
         for(int i=0;i<termsDoc.length;i++)
         {
             curTerm=termsDoc[i];
-            //if(termsDoc[i].length()<1||(termsDoc[i].toUpperCase()).matches("^(?=.[A-Z])(?=.[0-9])[A-Z0-9]+$"))
-            //   continue;
-            count=0;
-            //String SSS=termsDoc[i].replaceAll("-","");
             if((curTerm.length()==0)|| ((curTerm.trim().length()) == 0))
-                //||SSS.trim().length()==0)
                 continue;
             curTerm= removeExtra(curTerm);
             if (curTerm.length()>0)
-            //&&)
             {
                 if (!m_StopWords.containsKey(curTerm))
                 {//maybe remove ***??????
-                    /** if(termsDoc[i].indexOf('-')!=-1&&termsDoc[i].length()>1)
-                     {
-                     termsDoc[i]=handleMakaf(termsDoc[i]);
-                     addToTerm(termsDoc[i]);
-                     continue;
-                     }
-                     */
-
                     if(isNumber(curTerm))
                     {
                         curTerm = numbersHandler(curTerm);// numb 25-27,21/05/1991,29-word done
@@ -199,8 +161,6 @@ public class Parse
                         else
                         {
                             if(curTerm.length()>0) {
-                                // termsDoc[i] = termsDoc[i].replaceAll("[\\s % \\.////]", "");
-                                // termsDoc[i]=termsDoc[i].replaceAll(".")
                                 if ((!m_StopWords.containsKey(curTerm.toLowerCase())) && curTerm.contains("\'"))
                                     curTerm = handleApostrophe(curTerm);
                                 addToTerm(curTerm);
@@ -212,7 +172,6 @@ public class Parse
                 }
             }
         }
-        termsDoc=null;
     }
     private void addToTerm(String str)
     {
@@ -534,10 +493,6 @@ public class Parse
                 sdot.append(str);
                 str = sdot.toString();
             }
-            //while(str.indexOf("-")==0)
-            //  str=str.substring(1);
-            //while(str.length()>0&&str.lastIndexOf('-')==str.length()-1)
-            // str = str.substring(0, str.length()-1);
         }
         return str;
     }
