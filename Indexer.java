@@ -4,6 +4,12 @@ import java.io.*;
         import java.lang.*;
         import java.util.regex.Matcher;
         import java.util.regex.Pattern;
+
+/**
+ * This class performs the indexing of the corpus
+ * it creates the temporary posing files and the the final posting file
+ * build the Dictionary and the Cache
+ */
 public class Indexer
 {
     private Map<String,Term>mp_terms;
@@ -15,6 +21,13 @@ public class Indexer
     private String newLine;
     String pathToDictioanary;
 
+    /**
+     * this method initialize the indexer and call the function that start to create the temporary posting files
+     * @param parsedWords- the words after the pars process
+     * @param i- counter to keep track of number of documents
+     * @param mypath- the path to save posting file and dictionary
+     * @throws IOException
+     */
     public Indexer(Map<String,Term> parsedWords,int i,String mypath) throws IOException {//change the i to path ....
         //this.mypath="C:\\Users\\sheinbey\\Downloads\\11\\";
         this.mypath=mypath+"\\";
@@ -25,6 +38,11 @@ public class Indexer
         newLine = System.getProperty("line.separator");
         tempPosting();
     }
+
+    /**
+     * this method creates the temporary posting files
+     * @throws IOException
+     */
     public void tempPosting() throws IOException
     {
         //NEED TO CHANGE BACK TO GET MYPART !!!!!!!!!!!!!!!!!!!!!!!
@@ -34,11 +52,6 @@ public class Indexer
         //System.out.println(logFile.getCanonicalPath());
         //int i = 1;
         System.out.println(logFile.getAbsolutePath());
-
-        /** List<Map.Entry<String,Term>> a  = new ArrayList<>(mp_terms.entrySet());
-         Collections.sort(a, new Comparator<Map.Entry<String, Term>>() {
-           public int compare(Map.Entry<String, Term> o1, Map.Entry<String, Term> o2) {
-              return (o1.getKey()).compareTo( o2.getKey());}});*/
         List <String>sortedTerms=new ArrayList(mp_terms.keySet());
         Collections.sort(sortedTerms);
         for( String s: sortedTerms)
@@ -64,34 +77,12 @@ public class Indexer
             }
         }
 
-
-
-        ///////////////////////////////////////////
-      /**  for (Map.Entry<String,Term> termo: a){
-         //we go over the words from parser
-         //add the words to dictionary
-         //for each term addd the number of dcos and ttotal appernces
-         if(m_Dictionary.containsKey(termo.getKey()))
-         {
-         TermDic t = m_Dictionary.get(termo.getKey());
-         t.setApperances(termo.getValue().getTotalApperance());
-         m_Dictionary.get(termo.getKey()).setNumOfDocs(termo.getValue().getNumOfDocIDF());
-         }
-         else
-         m_Dictionary.put(termo.getKey(), new TermDic(termo.getKey(),termo.getValue().getTotalApperance(),
-         0,termo.getValue().getNumOfDocIDF()));
-         String value =termo.getValue().toString();//get the string that describe the term
-         WriteToTxt(value,writer);
-         }
-         //////////////////////////////////
-       */
-         //a.clear();
         sortedTerms.clear();
         mp_terms.clear();
         System.gc();
         writer.close();
     }
-    public void WriteToTxt(String s, BufferedWriter writer){
+   /* public void WriteToTxt(String s, BufferedWriter writer){
         // Yael removed because unnecessary alreday include in buffer writer - File logFile
         //String string =s;
         //System.out.println(s);
@@ -101,31 +92,20 @@ public class Indexer
             e.printStackTrace();
         }
     }
-    public  void  mergAllFile() throws IOException {
+    */
+
+    /**
+     * this method start the merging of the temporary posting files merge insertion algorithm between each 2 files
+     * @throws IOException
+     */
+    public  void  mergeAllFile() throws IOException {
         File logFile=new File(mypath+"00.txt");
         BufferedWriter writer = new BufferedWriter(new FileWriter(logFile));
         File directory = new File(mypath+"1");
         directory.mkdirs();
         String path3=directory.getCanonicalPath();
-        /**for (int j=0;j<=181;j=j+2){
-         String s =mergTwoFile(mypath+j+".txt",mypath+(j+1)+".txt",path3+"\\"+(j/2));
-         System.out.println(j);
-         }
-         String thepath = directory.getAbsolutePath();
-         directory = new File(mypath+"\\2");
-         directory.mkdirs();
-         path3=mypath+"2";
-         for (int j=0;j<90;j=j+2){
-         String s =mergTwoFile(thepath+"\\"+j+".txt",thepath+"\\"+(j+1)+".txt",path3+"\\"+(j/2));
-         System.out.println(j);
-         }
-         String t=mergTwoFile(thepath+"\\"+90+".txt",logFile.getAbsolutePath(),path3+"\\45");
-         thepath = directory.getAbsolutePath();
-         directory=new File(mypath+"\\3");
-         directory.mkdirs();
-         path3=mypath+"3";*/
         for (int j=0;j<=45;j=j+2){
-            String s =mergTwoFile(mypath+j+".txt",mypath+(j+1)+".txt",path3+"\\"+(j/2));
+            String s =mergeTwoFile(mypath+j+".txt",mypath+(j+1)+".txt",path3+"\\"+(j/2));
             System.out.println(j);
         }
         String thepath = directory.getAbsolutePath();
@@ -133,16 +113,16 @@ public class Indexer
         directory.mkdirs();
         path3=mypath+"4";
         for (int j=0;j<22;j=j+2){
-            String s =mergTwoFile(thepath+"\\"+j+".txt",thepath+"\\"+(j+1)+".txt",path3+"\\"+(j/2));
+            String s =mergeTwoFile(thepath+"\\"+j+".txt",thepath+"\\"+(j+1)+".txt",path3+"\\"+(j/2));
             System.out.println(j);
         }
-        String t=mergTwoFile(thepath+"\\"+22+".txt",logFile.getAbsolutePath(),path3+"\\11");
+        String t=mergeTwoFile(thepath+"\\"+22+".txt",logFile.getAbsolutePath(),path3+"\\11");
         thepath = directory.getAbsolutePath();
         directory=new File(mypath+"\\5");
         directory.mkdirs();
         path3=mypath+"5";
         for (int j=0;j<=11;j=j+2){
-            String s =mergTwoFile(thepath+"\\"+j+".txt",thepath+"\\"+(j+1)+".txt",path3+"\\"+(j/2));
+            String s =mergeTwoFile(thepath+"\\"+j+".txt",thepath+"\\"+(j+1)+".txt",path3+"\\"+(j/2));
             System.out.println(j);
         }
         thepath = directory.getAbsolutePath();
@@ -150,7 +130,7 @@ public class Indexer
         directory.mkdirs();
         path3=mypath+"6";
         for (int j=0;j<=5;j=j+2){
-            String s =mergTwoFile(thepath+"\\"+j+".txt",thepath+"\\"+(j+1)+".txt",path3+"\\"+(j/2));
+            String s =mergeTwoFile(thepath+"\\"+j+".txt",thepath+"\\"+(j+1)+".txt",path3+"\\"+(j/2));
             System.out.println(j);
         }
         thepath = directory.getAbsolutePath();
@@ -158,20 +138,29 @@ public class Indexer
         directory.mkdirs();
         path3=mypath+"7";
         for (int j=0;j<2;j=j+2){
-            String s =mergTwoFile(thepath+"\\"+j+".txt",thepath+"\\"+(j+1)+".txt",path3+"\\"+(j/2));
+            String s =mergeTwoFile(thepath+"\\"+j+".txt",thepath+"\\"+(j+1)+".txt",path3+"\\"+(j/2));
             System.out.println(j);
         }
-        t=mergTwoFile(thepath+"\\"+2+".txt",logFile.getAbsolutePath(),path3+"\\1");
+        t=mergeTwoFile(thepath+"\\"+2+".txt",logFile.getAbsolutePath(),path3+"\\1");
         thepath = directory.getAbsolutePath();
         directory=new File(mypath+"\\8");
         directory.mkdirs();
         path3=mypath+"8";
         for (int j=0;j<=1;j=j+2){
-            String s =mergTwoFileLast(thepath+"\\"+j+".txt",thepath+"\\"+(j+1)+".txt",path3+"\\"+(j/2));
+            String s =mergeTwoFileLast(thepath+"\\"+j+".txt",thepath+"\\"+(j+1)+".txt",path3+"\\"+(j/2));
             System.out.println(j);
         }
     }
-    public String mergTwoFileLast(String path1,String path2,String path3) throws IOException{
+
+    /**
+     * this method merge insertion algorithm between the *last* 2  temporary posting files and creates the cache and update the pointer in the dictionary
+     * @param path1
+     * @param path2
+     * @param path3
+     * @return
+     * @throws IOException
+     */
+    public String mergeTwoFileLast(String path1,String path2,String path3) throws IOException{
         //the merge for the last tow temporary posting files
         //create the dictionary and cache
 
@@ -395,7 +384,16 @@ public class Indexer
 
         return "";
     }
-    public String mergTwoFile(String path1,String path2,String path3) throws IOException {
+
+    /**
+     * this method take 2 text files and mergethem with insertion algorithm between 2 temporary posting files into a new 3rd file
+     * @param path1
+     * @param path2
+     * @param path3
+     * @return
+     * @throws IOException
+     */
+    public String mergeTwoFile(String path1,String path2,String path3) throws IOException {
         File logFile=new File(path3+".txt");
         BufferedWriter writer = new BufferedWriter(new FileWriter(logFile));
         BufferedReader br = new BufferedReader(new FileReader(path1));
@@ -535,6 +533,11 @@ public class Indexer
         return appercances;
     }
 
+    /**
+     * this method find the 2 documents that a term from the cache appeared in the most
+     * @param docs
+     * @return a string that indicate the 2 documents that the term appeared in and the number of appearances
+     */
     public String findTheDocs(String docs){
         //docs = docs.substring(docs.indexOf("&"),docs.indexOf("["));
         //String max1="";

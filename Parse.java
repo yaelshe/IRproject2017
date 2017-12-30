@@ -4,11 +4,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-
+/**
+ * This class preform the process of parsing to all the text from the documents in the corpus and store all of the terms in a Map
+ * according to all of the rules which were given in the assignment and two more that we added
+ */
 public class Parse
 {
-    private static HashMap<String,String> m_StopWords;
-    public Map<String, SearchEngine.Term> m_terms;//**
+    private static HashMap<String,String> m_StopWords;//the stop words from the file
+    public Map<String, SearchEngine.Term> m_terms;// the terms to save for the dictionary
     private static Map<String,String> m_stem=new HashMap<>();// beforeStem,afterStem
     //private ArrayList<String> beforeTerms;
     private Map<String,Document>m_documents;
@@ -25,7 +28,12 @@ public class Parse
         put("oct","10");put("nov","11");put("dec","03");}};
     String currDoc;
 
-
+    /**
+     * this is the constructor of parsing it initliaze the stop words if needed
+     *
+     * @param m_StopWords - the stop words
+     * @param doStemming- weather to preform stemming(true) or not(false)
+     */
     public Parse(Map<String,String> m_StopWords ,boolean doStemming) {
         if(this.m_StopWords==null)
             this.m_StopWords = new HashMap<>(m_StopWords);//added new need tot check time to run
@@ -37,25 +45,37 @@ public class Parse
          removeAll=Pattern.compile("[^\\w && [^.%]]+");// added the percent back
          removeTags=Pattern.compile("<(.*?)>");
     }
+
+    /**
+     * this method itreate over the documents to be handled and send them to the next function to pars their text
+     * @param documents- a Map for the documents where String key is the name of document and
+     *                value is a Document that contains more details about the document including its' text.
+     */
     public void ParseAll(Map<String,Document>documents)
     {
         m_documents=new HashMap<>(documents);
         for (Document duc: m_documents.values())
         {
             currDoc=duc.getId();
-            parseDoc(duc);
+            parseDoc(duc.getText());//changed to sed only the text of the document to parsing
+            duc.setText("");
         }
         m_documents.clear();
         System.gc();
 
     }
 
-    public void parseDoc(Document doc)
+    /**
+     * this function perform the parsing process over the text in the document doc
+     * @param docText- the text of the document
+     */
+    public void parseDoc(String docText)
     {
-        doc.setText(doc.text.replaceAll(removeTags.toString(),""));
+        //doc.setText(doc.text.replaceAll(removeTags.toString(),""));
+        docText.replaceAll(removeTags.toString(),"");
         //doc.getText().replaceAll("-"," ");
-        String []termsDoc=doc.getText().split("[\\s\\-]");
-        doc.setText("");
+        String []termsDoc=docText.split("[\\s\\-]");
+        //m_documents.get(currDoc).setText("");// moved to the ParseAll function
         //System.out.println(currDoc+"i split the text of it");
         int count;
         String curTerm;
@@ -150,11 +170,11 @@ public class Parse
                             String str1 = "", str2 = "", total = "";
                             if (i + 1 < termsDoc.length) {
                                 str1 = termsDoc[i + 1];
-                                if (i + 2 < termsDoc.length) {
-                                    str2 = termsDoc[i + 2];
-                                }
+                               // if (i + 2 < termsDoc.length) {
+                                //    str2 = termsDoc[i + 2];
+                               // }
                             }
-                            count=capitalTerm(curTerm, removeExtra(str1), removeExtra(str2));
+                            count=capitalTerm(curTerm, removeExtra(str1));
                             i = i + count - 1;
                             continue;
                         }
@@ -173,6 +193,14 @@ public class Parse
             }
         }
     }
+
+    /**
+     * this method get the string of a term to insert do the terms Map
+     * perform the stemming if the boolean field is true
+     * check for stop words
+     * and finaly insert to terms
+     * @param str - the word to be insert to terms
+     */
     private void addToTerm(String str)
     {
         String strafter;
@@ -229,6 +257,12 @@ public class Parse
         }
 
     }
+
+    /**
+     * this method was supposed to handle words with dash in between phrase but due to long runnig time is is not used
+     * @param str
+     * @return
+     */
     private String handleMakaf (String str) {
         StringBuilder total = new StringBuilder();
         //System.out.println(sb.toString());
@@ -289,6 +323,11 @@ public class Parse
         return total.toString();
     }
 
+    /**
+     * this function handle the first role we added which is to save words with the ' as prefix and also the hole word without it
+     * @param str- the string that contain the '
+     * @return the string without the '
+     */
     private String handleApostrophe (String str)
     {
         if (str.contains("\'")&&!m_StopWords.containsKey(str.toLowerCase())) {
@@ -329,6 +368,13 @@ public class Parse
         }
         return true;
     }
+
+    /**
+     * this function checks if the two string that is given to her contains months names
+     * @param s1
+     * @param s2
+     * @return if o ne of the string is a name of a month
+     */
     private boolean isDate(String s1,String s2)
     {
         // a function to check if the term is part of a date
@@ -338,6 +384,14 @@ public class Parse
         }
         return false;
     }
+
+    /**
+     * this method handle the string which is a number to change number from 83.333333 to 83.33
+     * remove th at the end
+     * and the percent symbol %
+     * @param s a string which is a number that needs to be altered
+     * @return - the number in a string without th % or more then 2 digits after the dot
+     */
     private String numbersHandler(String s) {
         //change number from 83.333333 to 83.33
         //String tt = "3.5555";
@@ -365,6 +419,15 @@ public class Parse
             s=s+" percent";
         return  s;
     }
+
+    /**
+     * this function handle the strings to create a date in this Pattern 00/00/00 or 00/00 that we were obligated in the rules
+     * @param s1
+     * @param s2
+     * @param s3
+     * @param s4
+     * @return the new string of a date in 00/00 or 00/00/00
+     */
     public String dateHandler(String s1,String s2,String s3,String s4){//(termsDoc[i - 1], termsDoc[i], termsDoc[i + 1], termsDoc[i + 2])
         //change the format of the date in the text to the rule we have
         String day="";
@@ -423,7 +486,16 @@ public class Parse
         }
 
     }
-    public  int capitalTerm(String s1, String s2,String s3) {
+
+    /**
+     * this string handle words that appeared with a Capital letter and check for the words after it
+     * to check if its a name or a phrase we need to save as a term together
+     * @param s1- first word to have Capital letter
+     * @param s2 - second word to check if also have capital letter
+     *
+     * @return the term we need to save if more then one word starts with capital letter
+     */
+    public  int capitalTerm(String s1, String s2) {
         //ADD 4 STRING TO FUNC RETURN NUMBER OF WORDS IN phrase
         //List<String> phrase = new LinkedList<String>();
         if(s1.contains("\'"))
@@ -458,6 +530,11 @@ public class Parse
         return count;
     }
 
+    /**
+     * this method change day structure to 00 structure
+     * @param d
+     * @return
+     */
     private String cmpToDay(int d){
         String day = "";
         if (d<10)
@@ -470,6 +547,13 @@ public class Parse
         }
         return  day;
     }
+
+    /**
+     * this method remove all the parts from the words that we don't need to save
+     * remove almost every Punctuation symbol
+     * @param str- the term to be first handle from extra punctuation symbol
+     * @return the altered term
+     */
     public String removeExtra(String str)
     {
         //str=str.replaceAll("[,#!&?*()<>^{}\\\":;+|\\[\\]\\s\\\\]","");

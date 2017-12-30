@@ -45,7 +45,7 @@ public class Main {
             //indexer=new Indexer();//add the m_terms and the path for posting files
         }
         try {
-            indexer.mergAllFile();
+            indexer.mergeAllFile();
         } catch (IOException e) {
             e.printStackTrace();
         }

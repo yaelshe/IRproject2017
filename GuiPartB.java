@@ -18,6 +18,9 @@ import javafx.stage.Stage;
 import java.io.*;
 import java.util.Map;
 
+/**
+ * This Class activate the Gui for Part B  of the search engine
+ */
 public class GuiPartB extends Application {
 
     Stage window;
@@ -39,12 +42,20 @@ public class GuiPartB extends Application {
     long totalTime;
     boolean finish=false;
 
-
+    /**
+     * this function that launch the program
+     * @param args
+     */
     public static void main(String[] args) {
         launch(args);
     }
 
+    /**
+     * This method activate the window for the Gui
+     * @param primaryStage
+     */
     @Override
+
     public void start(Stage primaryStage) {
         window = primaryStage;
         window.setTitle("Welcome to our search engine! ");

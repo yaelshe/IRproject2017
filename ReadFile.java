@@ -11,6 +11,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+/**
+ * This class reaches the corpus file and take all the document form the folders
+ * get the stop words list
+ * and use iteration to read t the main memory only 40 folders at a time(out of 1815).
+ */
 public class ReadFile
 {
     Map<String,Document> documents ;
@@ -22,6 +27,11 @@ public class ReadFile
      static int counDocs=0;
     int nextFile;
 
+    /**
+     * This is the constructor which make the stop word list
+     * and extract from the corpus file all of the path to folder s inside of it.
+     * @param path- the path to the corpus
+     */
     public ReadFile(String path)
     {
         //create the HashMap for the stopwords from the array;
@@ -47,6 +57,10 @@ public class ReadFile
 
     }
 
+    /**
+     * this method take the paths of the folders and extract from each folder the , file and the text inside of it
+     * and send the file to be splitted to documents
+     */
     public void breakToFiles()
     {
         List<String> mydocuments=new ArrayList<String>();
@@ -78,6 +92,11 @@ public class ReadFile
         mydocuments.clear();
     }
 
+    /**
+     * this method get the string of the hole file and divide to the docs inside by the tags "<DOC></DOC>"
+     * and save all the documents and the text inside of the <TEXT> </TEXT> tags inside of them to "documents"
+     * @param stringfile- the text in the file from the folder
+     */
     private  void breakToDocs(String stringfile)
     {
         //allMatchesofdoc.clear();
@@ -115,9 +134,15 @@ public class ReadFile
         allMatchesofdoc.clear();
     }
 
+    /**
+     * this method takes a path to a file and returnn the text that is inside.
+     * @param filePath- tha path to the file
+     * @return string for all of the text in the file
+     * @throws IOException
+     */
     private String readFileAsString(String filePath) throws IOException
     {//pull all the text from the file
-        //System.out.println(filePath);
+
         StringBuffer fileData = new StringBuffer();
         BufferedReader reader = new BufferedReader(
                 new FileReader(filePath));
@@ -130,6 +155,12 @@ public class ReadFile
         reader.close();
         return fileData.toString();
     }
+
+    /**
+     * this method gets path to the stop word text file and return a string array with all of the words
+     * @param S the path to the stop word file
+     * @return the array of stop words as strings
+     */
     private  String [] readStopword(String S){
         //make a string Array from all the StopWords
         String everything="";

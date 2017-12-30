@@ -13,8 +13,16 @@ import javafx.scene.layout.*;
 import javafx.scene.control.*;
 import javafx.geometry.*;
 
+/**
+ * This class is part of the gui
+ * it creates a pop up window with a comment sent as a parameter
+ */
 public class AlertBox {
-
+    /**
+     * this method initaite the window of the pop up message
+     * @param title- title of window
+     * @param message the comment that will appear in the window
+     */
     public static void display(String title, String message) {
         Stage window = new Stage();
 

@@ -2,12 +2,22 @@ package SearchEngine;
 
 import java.io.Serializable;
 
+/**
+ * This class creates an object for a Term to save in the Dictionary from the corpus' documents
+ */
 public class TermDic implements Comparable,Serializable {
     String name;
     int apperances;
     int pointer;//row number in posting file
     int numOfDocs;
 
+    /**
+     * the constructor
+     * @param name the term string
+     * @param apperances number of appearances in corpus
+     * @param linePointer pointer to the line in posting file or cache
+     * @param num number of docs that the term appear in
+     */
     public TermDic(String name, int apperances,int linePointer,int num) {
         this.name = name;
         this.apperances = apperances;
@@ -46,6 +56,12 @@ public class TermDic implements Comparable,Serializable {
     public void setApperances(int apperances) {
         this.apperances = this.apperances+apperances;
     }
+
+    /**
+     * this method is a compare for two terms according to the alphabet order
+     * @param o - anooter TermDic
+     * @return the order between the terms
+     */
     @Override
     public int compareTo(Object o) {
         if(this.numOfDocs==((TermDic)o).getNumOfDocs())

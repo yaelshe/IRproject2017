@@ -1,9 +1,13 @@
 package SearchEngine;
 
-        import java.util.*;
+import java.util.*;
         import java.io.BufferedReader;
         import java.lang.*;
         import java.io.InputStreamReader;
+
+/**
+ * This class creates an object for a Document from the corpus
+ */
 public class Document
 {
     public String text;
@@ -13,7 +17,14 @@ public class Document
     public final String id ;
     //String date ;
 
-
+    /**
+     * this is the constructor that initialize the fields for the document object.
+     * @param id- name of document
+     * @param text- tect of the document
+     * @param max_tf- number of appearances most ferquent term
+     * @param docLength- the length of document by string of the text's size
+     * @param mostCommWord- the most common string in the text
+     */
     public Document(String id,String text, int max_tf, int docLength, String mostCommWord) {
         this.text = text;
         this.max_tf = max_tf;
