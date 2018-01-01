@@ -139,6 +139,9 @@ public class GuiPartB extends Application {
         Label resetLabel = new Label("To reset the results:");
         GridPane.setConstraints(resetLabel, 0, 4);
 
+        //Stemming
+        CheckBox stemmerCheck=new CheckBox("Stemming?");
+        GridPane.setConstraints(stemmerCheck, 3, 2);
         //save the created files
         Button saveButton = new Button("SAVE");
         GridPane.setConstraints(saveButton, 2, 7);
@@ -184,7 +187,7 @@ public class GuiPartB extends Application {
         GridPane.setConstraints(saveInput, 1, 7);
 
         //Add everything to grid
-        grid.getChildren().addAll(docQueryLabel,docNameInput,docBrowse,loadDIctionary,loadLabel,queryLabel,queryInput,expandCheck, fileQueryLabel, queryFileInput,runQuery, queryFileBrowse
+        grid.getChildren().addAll(stemmerCheck,docQueryLabel,docNameInput,docBrowse,loadDIctionary,loadLabel,queryLabel,queryInput,expandCheck, fileQueryLabel, queryFileInput,runQuery, queryFileBrowse
                 ,resetButton,resetLabel,saveButton,saveLabel,loadButton,loadLabel2,
                 saveInput,loadInput);
 
