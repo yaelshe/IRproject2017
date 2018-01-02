@@ -19,14 +19,14 @@ public class Indexer
     private int mytxt;
     private String mypath;
     private String newLine;
-    String pathToDictioanary;
+    private String pathToDictioanary;
 
     /**
      * this method initialize the indexer and call the function that start to create the temporary posting files
      * @param parsedWords- the words after the pars process
      * @param i- counter to keep track of number of documents
      * @param mypath- the path to save posting file and dictionary
-     * @throws IOException
+     * @throws IOException -
      */
     public Indexer(Map<String,Term> parsedWords,int i,String mypath) throws IOException {//change the i to path ....
         //this.mypath="C:\\Users\\sheinbey\\Downloads\\11\\";
@@ -41,7 +41,7 @@ public class Indexer
 
     /**
      * this method creates the temporary posting files
-     * @throws IOException
+     * @throws IOException -
      */
     public void tempPosting() throws IOException
     {
@@ -102,7 +102,8 @@ public class Indexer
         File logFile=new File(mypath+"00.txt");
         BufferedWriter writer = new BufferedWriter(new FileWriter(logFile));
         File directory = new File(mypath+"1");
-        directory.mkdirs();
+        //TODO NEXT LINE COMMENT
+        directory.mkdirs();// result is ignored??? what is this line? , APPEARS IN MORE LINES NOT ONLY HERE
         String path3=directory.getCanonicalPath();
         for (int j=0;j<=45;j=j+2){
             String s =mergeTwoFile(mypath+j+".txt",mypath+(j+1)+".txt",path3+"\\"+(j/2));
@@ -154,11 +155,12 @@ public class Indexer
 
     /**
      * this method merge insertion algorithm between the *last* 2  temporary posting files and creates the cache and update the pointer in the dictionary
-     * @param path1
-     * @param path2
-     * @param path3
-     * @return
-     * @throws IOException
+     * @param path1 -
+     * @param path2 -
+     * @param path3 -
+     *              //TODO WHY RETURN STRING???
+     * @return -
+     * @throws IOException -
      */
     public String mergeTwoFileLast(String path1,String path2,String path3) throws IOException{
         //the merge for the last tow temporary posting files
@@ -197,7 +199,7 @@ public class Indexer
         }
 
         while (line != null && line2 != null &&!line.equals("null") &&!line2.equals("null")) {
-            /**try {
+            /*try {
 
              if (write1) {
              line = br.readLine();
@@ -209,7 +211,7 @@ public class Indexer
                 s1 = line.substring(0, line.indexOf("#") - 1);
                 //System.out.println(s1);
             }
-            /**}
+            /*}
 
              } catch (IOException e) {
              e.printStackTrace();
@@ -255,7 +257,7 @@ public class Indexer
                 m_Dictionary.get(s1).setPointer(counterLine);
                 writerDic.write("name:"+m_Dictionary.get(s1).getName()+
                         "_numberofdocs:"+m_Dictionary.get(s1).getNumOfDocs()+
-                        "_total,apperances:"+m_Dictionary.get(s1).getPointer()+
+                        "_total,apperances:"+m_Dictionary.get(s1).getApperances()+
                         "_pointer:"+m_Dictionary.get(s1).getPointer());
                 if(m_Cache.containsKey(s1))
                 {
@@ -275,7 +277,7 @@ public class Indexer
                     m_Dictionary.get(s1).setPointer(counterLine);
                     writerDic.write("name:"+m_Dictionary.get(s1).getName()+
                             "_numberofdocs:"+m_Dictionary.get(s1).getNumOfDocs()+
-                            "_total,apperances:"+m_Dictionary.get(s1).getPointer()+
+                            "_total,apperances:"+m_Dictionary.get(s1).getApperances()+
                             "_pointer:"+m_Dictionary.get(s1).getPointer());
                     if(m_Cache.containsKey(s1))
                     {
@@ -294,7 +296,7 @@ public class Indexer
                     m_Dictionary.get(s2).setPointer(counterLine);
                     writerDic.write("name:"+m_Dictionary.get(s2).getName()+
                             "_numberofdocs:"+m_Dictionary.get(s2).getNumOfDocs()+
-                            "_total,apperances:"+m_Dictionary.get(s2).getPointer()+
+                            "_total,apperances:"+m_Dictionary.get(s2).getApperances()+
                             "_pointer:"+m_Dictionary.get(s2).getPointer());
                     if(m_Cache.containsKey(s2))
                     {
@@ -331,7 +333,7 @@ public class Indexer
                             m_Dictionary.get(sx).setPointer(counterLine);
                             writerDic.write("name:"+m_Dictionary.get(sx).getName()+
                                     "_numberofdocs:"+m_Dictionary.get(sx).getNumOfDocs()+
-                                    "_total,apperances:"+m_Dictionary.get(sx).getPointer()+
+                                    "_total,apperances:"+m_Dictionary.get(sx).getApperances()+
                                     "_pointer:"+m_Dictionary.get(sx).getPointer());
                         }
                         if (m_Cache.containsKey(sx)) {
@@ -364,7 +366,7 @@ public class Indexer
                             m_Dictionary.get(s).setPointer(counterLine);
                             writerDic.write("name:"+m_Dictionary.get(s).getName()+
                                     "_numberofdocs:"+m_Dictionary.get(s).getNumOfDocs()+
-                                    "_total,apperances:"+m_Dictionary.get(s).getPointer()+
+                                    "_total,apperances:"+m_Dictionary.get(s).getApperances()+
                                     "_pointer:"+m_Dictionary.get(s).getPointer());
                         }
                         if (m_Cache.containsKey(s)) {
@@ -387,11 +389,11 @@ public class Indexer
 
     /**
      * this method take 2 text files and mergethem with insertion algorithm between 2 temporary posting files into a new 3rd file
-     * @param path1
-     * @param path2
-     * @param path3
-     * @return
-     * @throws IOException
+     * @param path1 -
+     * @param path2 -
+     * @param path3 -
+     * @return -
+     * @throws IOException -
      */
     public String mergeTwoFile(String path1,String path2,String path3) throws IOException {
         File logFile=new File(path3+".txt");
@@ -519,7 +521,7 @@ public class Indexer
 
         return "";
     }
-    private int getAapperances(String line)
+   /* private int getAapperances(String line)
     {
         int first=line.indexOf("[");
         int last=line.indexOf("]");
@@ -532,6 +534,7 @@ public class Indexer
         }
         return appercances;
     }
+    */
 
     /**
      * this method find the 2 documents that a term from the cache appeared in the most

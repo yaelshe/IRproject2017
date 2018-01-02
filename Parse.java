@@ -1,7 +1,13 @@
 package SearchEngine;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
@@ -14,11 +20,18 @@ public class Parse
     public Map<String, SearchEngine.Term> m_terms;// the terms to save for the dictionary
     private static Map<String,String> m_stem=new HashMap<>();// beforeStem,afterStem
     //private ArrayList<String> beforeTerms;
-    private Map<String,Document>m_documents;
+    private HashMap<String,Document>m_documents;
+    public static HashMap<String,Integer> docPosting;
     private boolean doStem=true;
     private Stemmer stemmer;
     int maxfrequency;
-    Pattern remove, removeapo,removeAll,removeTags;
+    private Pattern remove, removeapo,removeAll,removeTags;
+    private File docFile;
+    private BufferedWriter writer;
+    private int docCounterWords=0;
+    public static int countDoc=0;
+    public static int countLinePostingDoc=0;
+    String currDoc;
 
     Map <String,String> Months=new HashMap<String, String>(){{
         put("january","01"); put("february","02"); put("march","03");put("april","04");put("may","05");
@@ -26,7 +39,7 @@ public class Parse
         put("november","11");put("december","12");put("jan", "01");put("feb","02");put("mar","03");
         put("apr","04");put("may","05");put("jun","06");put("jul","07");put("aug","08");put("sep","09");
         put("oct","10");put("nov","11");put("dec","03");}};
-    String currDoc;
+
 
     /**
      * this is the constructor of parsing it initliaze the stop words if needed
@@ -38,12 +51,20 @@ public class Parse
         if(this.m_StopWords==null)
             this.m_StopWords = new HashMap<>(m_StopWords);//added new need tot check time to run
         this.m_terms = new HashMap<>();
+        docPosting=new HashMap<String, Integer>();
         doStem=doStemming;
-         remove= Pattern.compile("[$%\\.// \\\\\\s]") ;
+         remove= Pattern.compile("[$%\\.// \\\\\\s]");
          removeapo= Pattern.compile("[\\']");
-        // removeAll=Pattern.compile("[,#!&?*()<>^{}\\\":;+|\\[\\]\\s\\\\]");
-         removeAll=Pattern.compile("[^\\w && [^.%]]+");// added the percent back
+         removeAll=Pattern.compile("[^\\w && [^.%$]]+");// added the percent back and the doolar
          removeTags=Pattern.compile("<(.*?)>");
+         try{
+             docFile=new File("D:\\PartB+"+"DOCS.txt");
+             writer= new BufferedWriter(new FileWriter(docFile));
+         }
+         catch (IOException e) {
+             System.out.println("path do docs file not found Parse class constructor line 58");
+             e.printStackTrace();
+         }
     }
 
     /**
@@ -59,6 +80,17 @@ public class Parse
             currDoc=duc.getId();
             parseDoc(duc.getText());//changed to sed only the text of the document to parsing
             duc.setText("");
+            countDoc++;
+            try {
+                writer.write(currDoc+" #"+docCounterWords);
+                docPosting.put(currDoc,countLinePostingDoc);
+                countLinePostingDoc++;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            //duc.setLengh(docCounterWords); this line if we keep data base for documents instead of file
+
+            docCounterWords=0;
         }
         m_documents.clear();
         System.gc();
@@ -71,6 +103,7 @@ public class Parse
      */
     public void parseDoc(String docText)
     {
+
         //doc.setText(doc.text.replaceAll(removeTags.toString(),""));
         docText.replaceAll(removeTags.toString(),"");
         //doc.getText().replaceAll("-"," ");
@@ -154,14 +187,14 @@ public class Parse
                         while(curTerm.length()>0&&curTerm.charAt(0)=='$')
                             curTerm=curTerm.substring(1);
                         if(curTerm.equals("")||curTerm.length()==0){
-                            addToTerm("dollar");;
+                            addToTerm("dollar");
                             continue;
                         }
                         addToTerm(curTerm+" dollar");
                         continue;
                     }
 
-                    else if(curTerm.length()>0){
+                    else {//if(curTerm.length()>0)
                         //if((curTerm.toUpperCase()).matches("^(?=.[A-Z])(?=.[0-9])[A-Z0-9]+$"))
                         //  continue;
                         curTerm=curTerm.replaceAll(remove.toString(),"");
@@ -211,6 +244,7 @@ public class Parse
             if (!m_StopWords.containsKey(str)) {
                 //System.out.println(str);
                 //System.out.println(str+" add to term");
+                docCounterWords++;
                 if(doStem)
                 {
                     if(m_stem.containsKey(str))
@@ -260,8 +294,8 @@ public class Parse
 
     /**
      * this method was supposed to handle words with dash in between phrase but due to long runnig time is is not used
-     * @param str
-     * @return
+     * @param str -
+     * @return -
      */
     private String handleMakaf (String str) {
         StringBuilder total = new StringBuilder();
@@ -270,7 +304,7 @@ public class Parse
             str = str.replaceAll("--", "-");
         if (str.indexOf("-") != -1) {
             int makaf = str.indexOf("-");
-            String part1 = (str.toString()).substring(0, makaf);
+            String part1 = (str).substring(0, makaf);
             if (part1.length() > 0) {
                 //part1 = removeExtra((part1)); maybe not necessary
                 if (isNumber(part1)) {
@@ -371,8 +405,8 @@ public class Parse
 
     /**
      * this function checks if the two string that is given to her contains months names
-     * @param s1
-     * @param s2
+     * @param s1-
+     * @param s2-
      * @return if o ne of the string is a name of a month
      */
     private boolean isDate(String s1,String s2)
@@ -422,10 +456,10 @@ public class Parse
 
     /**
      * this function handle the strings to create a date in this Pattern 00/00/00 or 00/00 that we were obligated in the rules
-     * @param s1
-     * @param s2
-     * @param s3
-     * @param s4
+     * @param s1-
+     * @param s2-
+     * @param s3-
+     * @param s4-
      * @return the new string of a date in 00/00 or 00/00/00
      */
     public String dateHandler(String s1,String s2,String s3,String s4){//(termsDoc[i - 1], termsDoc[i], termsDoc[i + 1], termsDoc[i + 2])
@@ -514,7 +548,7 @@ public class Parse
             addToTerm(s2);
             phrase=phrase.append(" "+s2);
             count++;
-           /** if (s3.length()>0&&Character.isUpperCase(s3.charAt(0))&&!Character.isDigit(s3.charAt(0)))
+           /* if (s3.length()>0&&Character.isUpperCase(s3.charAt(0))&&!Character.isDigit(s3.charAt(0)))
             {
                 if(s3.contains("\'"))
                     s3=handleApostrophe(s3);
