@@ -20,6 +20,7 @@ public class Indexer
     private String mypath;
     private String newLine;
     private String pathToDictioanary;
+    private Map<String,Double> docWeight;
 
     /**
      * this method initialize the indexer and call the function that start to create the temporary posting files
@@ -161,7 +162,7 @@ public class Indexer
      *              //TODO WHY RETURN STRING???
      * @return -
      * @throws IOException -
-     */
+     *///TODO how i save diffrent postion for non stemming???
     public String mergeTwoFileLast(String path1,String path2,String path3) throws IOException{
         //the merge for the last tow temporary posting files
         //create the dictionary and cache
@@ -264,13 +265,13 @@ public class Indexer
                     m_Cache.get(s1).setPointer(counterLine);
                     m_Cache.get(s1).setFavDocs(findTheDocs(line));// need to change in all times
                 }
+
                 counterLine++;
                 write1 = true;
                 write2 = true;
                 //writer.close();
             } else {
                 if (s1.compareTo(s2) < 0) {
-
                     //System.out.println(s1);
                     writer.write(line + System.getProperty("line.separator"));
                     //int appercances=getAapperances(line);
@@ -368,7 +369,7 @@ public class Indexer
                                     "_numberofdocs:"+m_Dictionary.get(s).getNumOfDocs()+
                                     "_total,apperances:"+m_Dictionary.get(s).getApperances()+
                                     "_pointer:"+m_Dictionary.get(s).getPointer());
-                        }
+                        }//TODO change the pointer from the dictionary to cache if the word is in the cache
                         if (m_Cache.containsKey(s)) {
                             m_Cache.get(s).setPointer(counterLine);
                             m_Cache.get(s).setFavDocs(findTheDocs(line2));// need to change in all times
@@ -545,14 +546,7 @@ public class Indexer
         //docs = docs.substring(docs.indexOf("&"),docs.indexOf("["));
         //String max1="";
         //String max2="";
-        List<String> allMatchesofdoc ;
-        String regex = "\\{(?s)(.+?)\\}";
-        allMatchesofdoc = new ArrayList<String>();
-        Matcher m = Pattern.compile(regex).matcher(docs);
-        while (m.find()) {
-            //AbstractList<String> allMatchesofdoc;
-            allMatchesofdoc.add(m.group(1));
-        }
+        List<String> allMatchesofdoc =new ArrayList<>(getDocsForTerm(docs));
         String docid1="";
         String docid2="";
         int max1=0;
@@ -575,5 +569,29 @@ public class Indexer
         }
         String s = "["+docid1+" "+docid2+"]";
         return s;
+    }
+    private ArrayList<String> getDocsForTerm(String line)
+    {
+        ArrayList<String> allMatchesofdoc ;
+        String regex = "\\{(?s)(.+?)\\}";
+        //TODO make the pattern static and compiled once
+        allMatchesofdoc = new ArrayList<String>();
+        Matcher m = Pattern.compile(regex).matcher(line);
+        while (m.find()) {
+            //AbstractList<String> allMatchesofdoc;
+            allMatchesofdoc.add(m.group(1));
+        }
+        return allMatchesofdoc;
+    }
+    private void updateweightDocs(ArrayList<String> allMatchesofdoc )
+    {
+        for (String tempDoc : allMatchesofdoc) {
+            updateWeightDoc(tempDoc);
+            //System.out.println(tempDoc);
+        }
+    }
+    private void updateWeightDoc(String docWithTermFrequency)
+    {
+
     }
 }

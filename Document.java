@@ -11,7 +11,7 @@ import java.util.*;
 public class Document
 {
     public String text;
-    public int max_tf;//number of appearances most ferquent term
+    public int max_tf;//number of appearances most frequent term
     private final int docLength;
     public String mostCommWord;
     public final String id ;
@@ -20,7 +20,7 @@ public class Document
     /**
      * this is the constructor that initialize the fields for the document object.
      * @param id- name of document
-     * @param text- tect of the document
+     * @param text- text of the document
      * @param max_tf- number of appearances most ferquent term
      * @param docLength- the length of document by string of the text's size
      * @param mostCommWord- the most common string in the text

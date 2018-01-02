@@ -19,19 +19,20 @@ public class Parse
     private static HashMap<String,String> m_StopWords;//the stop words from the file
     public Map<String, SearchEngine.Term> m_terms;// the terms to save for the dictionary
     private static Map<String,String> m_stem=new HashMap<>();// beforeStem,afterStem
-    //private ArrayList<String> beforeTerms;
-    private HashMap<String,Document>m_documents;
-    public static HashMap<String,Integer> docPosting;
+    private HashMap<String,Document>m_documents; // the documents to do parse on
+    public static HashMap<String,Integer> docPosting;// a map to document name and line in the docFile
     private boolean doStem=true;
     private Stemmer stemmer;
     int maxfrequency;
     private Pattern remove, removeapo,removeAll,removeTags;
-    private File docFile;
-    private BufferedWriter writer;
-    private int docCounterWords=0;
-    public static int countDoc=0;
-    public static int countLinePostingDoc=0;
+    private File docFile; //FILE WITH ALL OF THE DOCUMENTS AND NUMBER OF WORDS IN EACH OF THEM
+    private BufferedWriter writerDoc;//write to docFile
+    private int docCounterWords=0;// how many word in currDoc
+    public static int countDoc=0;//how many documents we indexed?
+    public static int countLinePostingDoc=0;// What line are we in the docFile
     String currDoc;
+    static double currWeight=0;
+    public boolean _isQuery=false;
 
     Map <String,String> Months=new HashMap<String, String>(){{
         put("january","01"); put("february","02"); put("march","03");put("april","04");put("may","05");
@@ -39,8 +40,6 @@ public class Parse
         put("november","11");put("december","12");put("jan", "01");put("feb","02");put("mar","03");
         put("apr","04");put("may","05");put("jun","06");put("jul","07");put("aug","08");put("sep","09");
         put("oct","10");put("nov","11");put("dec","03");}};
-
-
     /**
      * this is the constructor of parsing it initliaze the stop words if needed
      *
@@ -51,15 +50,15 @@ public class Parse
         if(this.m_StopWords==null)
             this.m_StopWords = new HashMap<>(m_StopWords);//added new need tot check time to run
         this.m_terms = new HashMap<>();
-        docPosting=new HashMap<String, Integer>();
+        docPosting=new HashMap<>();
         doStem=doStemming;
          remove= Pattern.compile("[$%\\.// \\\\\\s]");
          removeapo= Pattern.compile("[\\']");
-         removeAll=Pattern.compile("[^\\w && [^.%$]]+");// added the percent back and the doolar
+         removeAll=Pattern.compile("[^\\w && [^.%$]]+");// added the percent back and the dollar
          removeTags=Pattern.compile("<(.*?)>");
          try{
              docFile=new File("D:\\PartB+"+"DOCS.txt");
-             writer= new BufferedWriter(new FileWriter(docFile));
+             writerDoc= new BufferedWriter(new FileWriter(docFile));
          }
          catch (IOException e) {
              System.out.println("path do docs file not found Parse class constructor line 58");
@@ -78,11 +77,11 @@ public class Parse
         for (Document duc: m_documents.values())
         {
             currDoc=duc.getId();
-            parseDoc(duc.getText());//changed to sed only the text of the document to parsing
+            parseDoc(duc.getText(),false);//changed to sed only the text of the document to parsing
             duc.setText("");
             countDoc++;
             try {
-                writer.write(currDoc+" #"+docCounterWords);
+                writerDoc.write(currDoc+" #"+docCounterWords);
                 docPosting.put(currDoc,countLinePostingDoc);
                 countLinePostingDoc++;
             } catch (IOException e) {
@@ -91,6 +90,11 @@ public class Parse
             //duc.setLengh(docCounterWords); this line if we keep data base for documents instead of file
 
             docCounterWords=0;
+        }
+        try {
+            writerDoc.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         m_documents.clear();
         System.gc();
@@ -101,9 +105,9 @@ public class Parse
      * this function perform the parsing process over the text in the document doc
      * @param docText- the text of the document
      */
-    public void parseDoc(String docText)
+    public void parseDoc(String docText,boolean isQuery)
     {
-
+        _isQuery=isQuery;
         //doc.setText(doc.text.replaceAll(removeTags.toString(),""));
         docText.replaceAll(removeTags.toString(),"");
         //doc.getText().replaceAll("-"," ");
@@ -237,56 +241,77 @@ public class Parse
     private void addToTerm(String str)
     {
         String strafter;
-        maxfrequency=m_documents.get(currDoc).getMax_tf();
-        str=str.replaceAll(removeapo.toString(),"");
-        if((!str.equals(" "))&&str.length()>0&&!str.equals(null)) {
-            str=str.toLowerCase();
-            if (!m_StopWords.containsKey(str)) {
-                //System.out.println(str);
-                //System.out.println(str+" add to term");
-                docCounterWords++;
-                if(doStem)
-                {
-                    if(m_stem.containsKey(str))
-                        str=m_stem.get(str);
-                    else {
-                        stemmer = new Stemmer();
-                        stemmer.add(str.toCharArray(), str.length());
-                        stemmer.stem();
-                        strafter = stemmer.toString();
-                        m_stem.put(str,strafter);
-                        str=strafter;
-                    }
-                }
-                // if(str.equals("illumin"))
-                //   System.out.print("ilumin add to term");
-                if (m_terms.containsKey(str)) {
-                    //think what have to update
-                    m_terms.get(str).setTotalApperance(1);//add 1 to total number of appernces in the entire magar
-                    if (m_terms.get(str).docs.containsKey(currDoc))//if i have the doc in the map of docs
-                    {
-                        m_terms.get(str).docs.put(currDoc, m_terms.get(str).docs.get(currDoc) + 1);//update
-                        if(maxfrequency< m_terms.get(str).docs.get(currDoc))
-                        {
-                            maxfrequency= m_terms.get(str).docs.get(currDoc);
-                            m_documents.get(currDoc).setMostCommWord(str);
+        if(!_isQuery) {
+            maxfrequency = m_documents.get(currDoc).getMax_tf();
+            str = str.replaceAll(removeapo.toString(), "");
+            if ((!str.equals(" ")) && str.length() > 0 && !str.equals(null)) {
+                str = str.toLowerCase();
+                if (!m_StopWords.containsKey(str)) {
+                    //System.out.println(str);
+                    //System.out.println(str+" add to term");
+                    docCounterWords++;
+                    if (doStem) {
+                        if (m_stem.containsKey(str))
+                            str = m_stem.get(str);
+                        else {
+                            stemmer = new Stemmer();
+                            stemmer.add(str.toCharArray(), str.length());
+                            stemmer.stem();
+                            strafter = stemmer.toString();
+                            m_stem.put(str, strafter);
+                            str = strafter;
                         }
-                    } else
-                    {//currDoc isn't in the list of files for the term- first time doc
-                        m_terms.get(str).docs.put(currDoc, 1);
-                        m_terms.get(str).numOfDocIDF++;
                     }
-                } else
-                {// first time term
-                    Map<String, Integer> docss = new HashMap<>();
-                    //jkdj
-                    docss.put(currDoc, 1);
-                    Term newterm = new Term(str, docss);
-                    m_terms.put(str, newterm);
-                    m_documents.get(currDoc).max_tf = m_terms.get(str).docs.get(currDoc);
-                    //newterm.docs.put(currDoc, 1);//update the list of docs the term is in
+                    // if(str.equals("illumin"))
+                    //   System.out.print("ilumin add to term");
+                    if (m_terms.containsKey(str)) {
+                        //think what have to update
+                        m_terms.get(str).setTotalApperance(1);//add 1 to total number of appernces in the entire magar
+                        if (m_terms.get(str).docs.containsKey(currDoc))//if i have the doc in the map of docs
+                        {
+                            m_terms.get(str).docs.put(currDoc, m_terms.get(str).docs.get(currDoc) + 1);//update
+                            if (maxfrequency < m_terms.get(str).docs.get(currDoc)) {
+                                maxfrequency = m_terms.get(str).docs.get(currDoc);
+                                m_documents.get(currDoc).setMostCommWord(str);
+                            }
+                        } else {//currDoc isn't in the list of files for the term- first time doc
+                            m_terms.get(str).docs.put(currDoc, 1);
+                            m_terms.get(str).numOfDocIDF++;
+                        }
+                    } else {// first time term
+                        Map<String, Integer> docss = new HashMap<>();
+                        //jkdj
+                        docss.put(currDoc, 1);
+                        Term newterm = new Term(str, docss);
+                        m_terms.put(str, newterm);
+                        m_documents.get(currDoc).max_tf = m_terms.get(str).docs.get(currDoc);
+                        //newterm.docs.put(currDoc, 1);//update the list of docs the term is in
 
+                    }
                 }
+            }
+        }
+        else {
+            str = str.replaceAll(removeapo.toString(), "");
+            if ((!str.equals(" ")) && str.length() > 0 && !str.equals(null)) {
+                str = str.toLowerCase();
+                if (!m_StopWords.containsKey(str)) {
+                    if (doStem) {
+                        if (m_stem.containsKey(str))
+                            str = m_stem.get(str);
+                        else {
+                            stemmer = new Stemmer();
+                            stemmer.add(str.toCharArray(), str.length());
+                            stemmer.stem();
+                            strafter = stemmer.toString();
+                            m_stem.put(str, strafter);
+                            str = strafter;
+                        }
+                    }
+                    Term newterm = new Term(str, null);
+                    m_terms.put(str, newterm);
+                }
+
             }
         }
 
