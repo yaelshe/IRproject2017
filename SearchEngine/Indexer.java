@@ -511,8 +511,8 @@ public class Indexer
 
         for (String tempDoc : allMatchesofdoc) {
            // { FBIS3-42818 :2}
-            docID=tempDoc.substring(tempDoc.indexOf('{'),tempDoc.indexOf(':'));
-            freqTerm=tempDoc.substring(tempDoc.indexOf(':'),tempDoc.indexOf('}'));
+            docID=tempDoc.substring(0,tempDoc.indexOf(':'));
+            freqTerm=tempDoc.substring(tempDoc.indexOf(':')+1,tempDoc.length()-1);
             updateWeightDoc(df,docID,freqTerm);
             //System.out.println(tempDoc);
         }

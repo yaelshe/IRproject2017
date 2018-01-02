@@ -242,6 +242,7 @@ public class GUI extends Application {
                   //  r.documents.clear();
                     //r.allMatchesofdoc.clear();
                     //indexer=new Indexer(P.m_terms,0,pathToPosting);
+
                     try {
                         indexer =new Indexer(P.m_terms,i,pathToPosting,P.countDoc);//changed to i
                         P.m_terms.clear();
@@ -262,12 +263,12 @@ public class GUI extends Application {
                 long endTime   = System.currentTimeMillis();
                 totalTime = endTime - startTime;
                 System.out.println(totalTime/1000/60);
+                    P.writerDoc.close();
                 letstrytosave();
                 finish=true;
                 finishData();
     }
     private void letstrytosave() {
-
         try {
             FileOutputStream fos= new FileOutputStream("D:\\PartB"+ "\\docsLengths.ser");
         ObjectOutputStream oos = new ObjectOutputStream(fos);

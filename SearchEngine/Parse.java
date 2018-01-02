@@ -26,7 +26,7 @@ public class Parse
     int maxfrequency;
     private Pattern remove, removeapo,removeAll,removeTags;
     private File docFile; //FILE WITH ALL OF THE DOCUMENTS AND NUMBER OF WORDS IN EACH OF THEM
-    private BufferedWriter writerDoc;//write to docFile
+    public static BufferedWriter writerDoc;//write to docFile
     private int docCounterWords=0;// how many word in currDoc
     public static int countDoc=0;//how many documents we indexed?
     public static int countLinePostingDoc=0;// What line are we in the docFile
@@ -81,7 +81,7 @@ public class Parse
             duc.setText("");
             countDoc++;
             try {
-                writerDoc.write(currDoc+" #"+docCounterWords);
+                writerDoc.write(currDoc+" #"+docCounterWords+System.getProperty("line.separator"));
                 docPosting.put(currDoc,docCounterWords);
                 //countLinePostingDoc++;
             } catch (IOException e) {
@@ -91,11 +91,12 @@ public class Parse
 
             docCounterWords=0;
         }
-        try {
+       /* try {
             writerDoc.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        */
         m_documents.clear();
         System.gc();
 
