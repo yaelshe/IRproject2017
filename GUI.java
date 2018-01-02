@@ -243,7 +243,7 @@ public class GUI extends Application {
                     //r.allMatchesofdoc.clear();
                     //indexer=new Indexer(P.m_terms,0,pathToPosting);
                     try {
-                        indexer =new Indexer(P.m_terms,i,pathToPosting);//changed to i
+                        indexer =new Indexer(P.m_terms,i,pathToPosting,P.countDoc);//changed to i
                         P.m_terms.clear();
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -262,10 +262,21 @@ public class GUI extends Application {
                 long endTime   = System.currentTimeMillis();
                 totalTime = endTime - startTime;
                 System.out.println(totalTime/1000/60);
+                letstrytosave();
                 finish=true;
                 finishData();
     }
+    private void letstrytosave() {
 
+        try {
+            FileOutputStream fos= new FileOutputStream("D:\\PartB"+ "\\docsLengths.ser");
+        ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(Parse.docPosting);
+            oos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     /**
      * this method set the terms for the dictionary from the indexer or loaded file
      * @return the list of terms for the dictionary
@@ -422,7 +433,7 @@ public class GUI extends Application {
     public void saveFiles() throws IOException
     {
         FileOutputStream fos;
-        if(doStemming==true)
+        if(doStemming)
             fos = new FileOutputStream(pathToSave+"\\StemmyDictionary.ser");
         else
             fos = new FileOutputStream(pathToSave+"\\myDictionary.ser");

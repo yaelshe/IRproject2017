@@ -20,7 +20,7 @@ public class Main {
 
         long startTime = System.currentTimeMillis();
 
-        ReadFile r= new ReadFile("C:\\Users\\sheinbey\\Downloads\\");
+       /* ReadFile r= new ReadFile("C:\\Users\\sheinbey\\Downloads\\");
         Indexer indexer=null;
         //C:\Users\sheinbey\Downloads\corpus
         int i = 0;
@@ -31,12 +31,12 @@ public class Main {
             System.out.println((instance.totalMemory())/(1024*1024)+"fd");
             r.breakToFiles();
             System.out.println((instance.totalMemory())/(1024*1024)+"fdd");
-            Parser P= new Parser(r.stopword,r.documents,true);
+            Parse P= new Parse(r.stopword,r.documents,true);
             P.ParseAll();
 
             //indexer=new Indexer(P.m_terms,0,pathToPosting);
             try {
-                 indexer =new Indexer(P.m_terms,i,"");//changed to i
+                 indexer =new Indexer(P.m_terms,i,"",P.d);//changed to i
             } catch (IOException e) {
                 e.printStackTrace();
                 System.out.println("here dosnt");
@@ -52,7 +52,7 @@ public class Main {
         long endTime   = System.currentTimeMillis();
         long totalTime = endTime - startTime;
         System.out.println(totalTime/1000/60);
-
+*/
         // String []strArray=s1.split("\\s+");
         //for(int i=0; i<strArray.length;i++ )
         //     {

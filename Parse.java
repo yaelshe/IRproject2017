@@ -82,8 +82,8 @@ public class Parse
             countDoc++;
             try {
                 writerDoc.write(currDoc+" #"+docCounterWords);
-                docPosting.put(currDoc,countLinePostingDoc);
-                countLinePostingDoc++;
+                docPosting.put(currDoc,docCounterWords);
+                //countLinePostingDoc++;
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -109,7 +109,7 @@ public class Parse
     {
         _isQuery=isQuery;
         //doc.setText(doc.text.replaceAll(removeTags.toString(),""));
-        docText.replaceAll(removeTags.toString(),"");
+        docText=docText.replaceAll(removeTags.toString(),"");
         //doc.getText().replaceAll("-"," ");
         String []termsDoc=docText.split("[\\s\\-]");
         //m_documents.get(currDoc).setText("");// moved to the ParseAll function
@@ -308,8 +308,8 @@ public class Parse
                             str = strafter;
                         }
                     }
-                    Term newterm = new Term(str, null);
-                    m_terms.put(str, newterm);
+                    //Term newterm = new Term(str, null);
+                    m_terms.put(str, null);
                 }
 
             }
